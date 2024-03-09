@@ -1,13 +1,21 @@
 const passport = require("passport");
 const cookie = require("cookie");
 const { ROLES } = require("../constants/");
+const dbFunctions = require('../config/dbFunctions');
 
 const Page = {
-  register: (req, res) => {
-    res.render("auth/register");
+  register: async (req, res) => {
+    try {
+      const pageNumber = 1; 
+      const courses = await dbFunctions.selectDataWithPagination('courses', pageNumber);
+      res.render("register", { courses });
+  } catch (error) {
+      console.error('Error fetching courses:', error);
+      res.status(500).send('Internal Server Error');
+  }
   },
   login: (req, res) => {
-    res.render("auth/login");
+    res.render("index");
   },
     homePage: (req, res, next) => {
         passport.authenticate("jwt", { session: false }, (err, user, info) => {

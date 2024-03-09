@@ -1,6 +1,11 @@
-// dbFunctions.js
+const { Pool } = require('pg');
 
-const { pool } = require('./initDB');
+const pool = new Pool({
+  connectionString: process.env.PG_URL
+});
+
+
+module.exports = pool;
 
 
 const selectDataWithPagination = async (tableName, pageNumber) => {
@@ -13,9 +18,9 @@ const selectDataWithPagination = async (tableName, pageNumber) => {
     return result.rows;
   };
 
-  const selectById = async (tableName, columnName, id) => {
-    const query = `SELECT ${columnName} FROM ${tableName} WHERE id = $1`;
-    const result = await pool.query(query, [id]);
+  const selectByEmail = async (tableName, email) => {
+    const query = `SELECT * FROM ${tableName} WHERE email = $1`;
+    const result = await pool.query(query, [email]);
   
     if (result.rows.length > 0) {
       return result.rows[0][columnName];
@@ -47,10 +52,10 @@ const createData = async (tableName, data) => {
     await pool.query(query, values);
 };
 
-module.export = {
-    createData,
-    deleteData,
-    updateData,
-    selectById,
-    selectDataWithPagination
-}
+module.exports = {
+  createData,
+  deleteData,
+  updateData,
+  selectByEmail,
+  selectDataWithPagination
+};

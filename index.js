@@ -6,9 +6,7 @@ const bodyParser = require("body-parser");
 const app = express();
 const routes = require("./routes");
 const passport = require("passport");
-
-// initDB();
-
+const initDB = require('./config/initDB')
 
 //  middlewares config
 const cookieParser = require("cookie-parser");
@@ -19,10 +17,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "views", "public")));
 //  init passport
-require("./config/passport");
-app.use(passport.initialize());
+// require("./config/passport");
+// app.use(passport.initialize());
 // routes
-// app.use(routes);
+app.use(routes);
+
 app.get("/*", (req, res) => res.render("error/404"));
 const server = http.createServer(app);
 const PORT = process.env.PORT || 3000;

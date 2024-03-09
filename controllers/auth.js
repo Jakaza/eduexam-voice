@@ -1,52 +1,65 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
-const dbFunctions = require("../dbFunctions");
-const nodemailer = require("../utils/nodemailer");
+const dbFunctions = require("../config/dbFunctions");
+const {sendMessage} = require("../utils/nodemailer");
 const { STATUS_CODE, ROLES } = require("../constants/");
 
 const Auth = {
-  register: async (req, res) => {
-    console.log(req.body);
-    const { username, email, password } = req.body;
-    if (!username || !email || !password) {
+register: async (req, res) => {
+  console.log(req.body);
+  const { first_name, last_name, email, password_hash, rsa_id, user_role, phone_number, user_address, course_id } = req.body;
+  if (!first_name || !last_name || !email || !password_hash || !rsa_id || !user_role || !course_id) {
       return res
-        .status(STATUS_CODE.Bad_Request)
-        .json({ status: false, message: "Fill in all the fields" });
-    }
-    try {
-      const userExist = await dbFunctions.selectById('users', 'username', username);
-      if (userExist) {
-        return res
           .status(STATUS_CODE.Bad_Request)
-          .json({ status: false, message: "Username is already taken" });
-      }
-      const salt = bcrypt.genSaltSync(10);
-      const hash = bcrypt.hashSync(password, salt);
+          .json({ status: false, message: "Fill in all the required fields" });
+  }
 
-      const newUser = { username, email, password: hash };
+  try {
+      const userExist = await dbFunctions.selectByEmail('users', email);
+      if (userExist) {
+          return res
+              .status(STATUS_CODE.Bad_Request)
+              .json({ status: false, message: "Email is already taken" });
+      }
+
+      const newUser = {
+          first_name,
+          last_name,
+          email,
+          password_hash,
+          rsa_id,
+          user_role,
+          phone_number,
+          user_address,
+          course_id,
+          created_at: new Date(),
+      };
+
       await dbFunctions.createData('users', newUser);
 
       // Send confirmation email with student number
-      nodemailer.sendMessage(username, email, 'Registration Confirmation', 'Welcome to our platform!');
+      sendMessage(first_name, email, 'Registration Confirmation', 'Welcome to our platform!');
 
       res.status(STATUS_CODE.Created).json({
-        status: true,
-        message: "User has been successfully created. Check your email for confirmation.",
-        user: {
-          username,
-          email,
-        },
+          status: true,
+          message: "User has been successfully created. Check your email for confirmation.",
+          user: {
+              first_name,
+              last_name,
+              email,
+          },
       });
-    } catch (error) {
+  } catch (error) {
       console.error(error);
       res.status(STATUS_CODE.Internal).json({
-        status: false,
-        message: "Something went wrong, try again...",
-        error,
+          status: false,
+          message: "Something went wrong, try again...",
+          error,
       });
-    }
-  },
+  }
+},
+
 
   login: async (req, res) => {
     console.log(req.body);
