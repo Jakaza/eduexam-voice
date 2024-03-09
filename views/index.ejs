@@ -13,7 +13,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
+
 <body>
+    
+<script>
+    // Access the query parameter from the URL
+    const isNewUser = new URLSearchParams(window.location.search).get('isNewUser');
+
+    // Check if isNewUser is true and display the welcome message
+    if (isNewUser === 'true') {
+        // Display a welcome message for new users
+        document.getElementById('welcome-message').textContent = 'Welcome! You are a new user. Please check your email and login.';
+    }
+</script>
     <div class="oq-header">
         <div class="container-fluid">
             <div class="row">
@@ -42,14 +54,7 @@
                     <div class="oq-login text-center">
                         <img src="images/quiz_1.png" class="oq-logo"><br><br>
                         <form class="form" action="" method="post">
-                            <!-- <?php
-                                    if($fail == 1){
-                                        echo "<span class='oq-error'>*Incorrect details</span><br><br>";
-                                    }
-                                    if(isset($_GET['signup'])){
-                                        echo "<span class='oq-success'>Signup successful please login</span><br><br>";
-                                    }
-                                ?> -->
+                            <p id="welcome-message"></p>
                             <input type="text" class="form-control" placeholder="Enter Student Number"
                                 name="userid"><br>
                             <input type="password" class="form-control" placeholder="Enter Password"
