@@ -1,20 +1,15 @@
 document.getElementById('loginForm').addEventListener('submit', function (event) {
     event.preventDefault();
-
     if (!validateLoginForm()) {
         return;
     }
-
     const form = document.getElementById('loginForm');
     const formData = new FormData(form);
-
     const jsonFormData = {};
     formData.forEach((value, key) => {
         jsonFormData[key] = value;
     });
-
     const postData = { ...jsonFormData };
-
     fetch('http://localhost:5000/auth/login', {
         method: 'POST',
         headers: {

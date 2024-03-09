@@ -14,7 +14,6 @@ register: async (req, res) => {
           .status(STATUS_CODE.Bad_Request)
           .json({ status: false, message: "Fill in all the required fields" });
   }
-
   try {
       const userExist = await dbFunctions.selectByEmail('users', email);
       if (userExist) {
@@ -22,7 +21,6 @@ register: async (req, res) => {
               .status(STATUS_CODE.Bad_Request)
               .json({ status: false, message: "Email is already taken" });
       }
-
       const newUser = {
           first_name,
           last_name,
@@ -35,12 +33,9 @@ register: async (req, res) => {
           course_id,
           created_at: new Date(),
       };
-
       await dbFunctions.createData('users', newUser);
-
       // Send confirmation email with student number
       sendMessage(first_name, email, 'Registration Confirmation', 'Welcome to our platform!');
-
       res.status(STATUS_CODE.Created).json({
           status: true,
           message: "User has been successfully created. Check your email for confirmation.",
@@ -64,35 +59,27 @@ register: async (req, res) => {
 login: async (req, res) => {
   console.log(req.body);
   const { email, password } = req.body;
-
   try {
       const userExist = await dbFunctions.selectByEmail('users', email);
-
       if (!userExist) {
           return res.status(STATUS_CODE.Bad_Request).json({
               status: false,
-              message: "Incorrect username or password... enter correct credentials",
+              message: "Incorrect username or password... Enter correct credentials",
           });
       }
-
-      const isMatched = await bcrypt.compare(password, userExist.password);
-
+      const isMatched = await bcrypt.compare(password, userExist.password_hash);
       if (!isMatched) {
           return res.status(STATUS_CODE.Bad_Request).json({
               status: false,
-              message: "Incorrect username or password... enter correct credentials",
+              message: "Incorrect username or password... Enter correct credentials",
           });
       }
-
       const payload = {
           id: userExist.user_id,
-          username: userExist.username,
+          email: userExist.email,
       };
-
       const secretOrPrivateKey = process.env.SECRET_PRIVATE_KEY;
-
       const token = jwt.sign(payload, secretOrPrivateKey, { expiresIn: "1d" });
-
       res.setHeader(
           "Set-Cookie",
           cookie.serialize("token", token, {
@@ -103,7 +90,6 @@ login: async (req, res) => {
               sameSite: "strict",
           })
       );
-
       res.status(STATUS_CODE.Success).json({
           status: true,
           message: "User has been successfully logged in.",
@@ -117,7 +103,6 @@ login: async (req, res) => {
       });
   }
 },
-
 
   logout: (req, res) => {
     res.clearCookie("token");

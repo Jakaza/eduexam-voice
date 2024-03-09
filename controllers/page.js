@@ -32,6 +32,17 @@ const Page = {
             });
           }
           else if(user.roles == ROLES.Lecturer){
+
+            // Select Course And Modules
+
+
+
+
+
+
+
+
+
             res.render("lecturer/main", {
               isAuthenticated: req.isAuthenticated,
               user: user,

@@ -1,13 +1,10 @@
 document.getElementById('register-form').addEventListener('submit', function (event) {
     event.preventDefault();
-
     if (!validateForm()) {
         return;
     }
-
     const form = document.getElementById('register-form');
     const formData = new FormData(form);
-
     const jsonFormData = {};
     formData.forEach((value, key) => {
         jsonFormData[key] = value;
