@@ -96,7 +96,7 @@
                                                     echo "<script>alert('language already exists');</script>";
                                                 }
                                             ?>
-                            <form class="form" action="" method="get">
+                            <form class="form" id="create-question" method="post">
                                 <span class="oq-modalLangHead">Create new subject</span><br><br>
                                 <div class="col-md-2"></div>
                                 <div class="col-md-4">
@@ -105,10 +105,10 @@
                                     <input type="text" class="form-control" placeholder="Enter the subject code"
                                         name="subj_code" required>
                                 </div>
-                                <!-- <div class="col-md-4">
+                                <div class="col-md-4">
                                     <input type="text" class="form-control" placeholder="Enter the subject code"
                                         name="code" required>
-                                </div> -->
+                                </div>
                                 <div class="col-md-4">
                                     <input type="submit" class="form-control oq-btn" value="Create" name="createlang">
                                 </div>
@@ -182,11 +182,53 @@
     </div>
     <script src="js/jquery-3.1.1.min.js"></script>
     <script src="js/bootstrap.js"></script>
+
+
+    <script>
+        // Create Question 
+        document.querySelector('#create-question').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    const form = document.querySelector('.form');
+    const formData = new FormData(form);
+
+    const jsonFormData = {};
+    formData.forEach((value, key) => {
+        jsonFormData[key] = value;
+    });
+
+    fetch('http://localhost:5000/create-question', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonFormData),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === true) {
+            console.log('Question created successfully!');
+            // Optionally, you can redirect or perform other actions upon successful creation
+        } else {
+            console.error(`Error: ${data.message}`);
+        }
+    })
+    .catch(error => {
+        console.error('There was a problem with the create question operation:', error);
+    });
+});
+
+    </script>
+
+
+
+
 </body>
 
 </html>
 
-<?php
-            }
-        }
-?>
