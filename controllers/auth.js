@@ -1,0 +1,215 @@
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const cookie = require("cookie");
+const dbFunctions = require("../dbFunctions");
+const nodemailer = require("../utils/nodemailer");
+const { STATUS_CODE, ROLES } = require("../constants/");
+
+const Auth = {
+  register: async (req, res) => {
+    console.log(req.body);
+    const { username, email, password } = req.body;
+    if (!username || !email || !password) {
+      return res
+        .status(STATUS_CODE.Bad_Request)
+        .json({ status: false, message: "Fill in all the fields" });
+    }
+    try {
+      const userExist = await dbFunctions.selectById('users', 'username', username);
+      if (userExist) {
+        return res
+          .status(STATUS_CODE.Bad_Request)
+          .json({ status: false, message: "Username is already taken" });
+      }
+      const salt = bcrypt.genSaltSync(10);
+      const hash = bcrypt.hashSync(password, salt);
+
+      const newUser = { username, email, password: hash };
+      await dbFunctions.createData('users', newUser);
+
+      // Send confirmation email with student number
+      nodemailer.sendMessage(username, email, 'Registration Confirmation', 'Welcome to our platform!');
+
+      res.status(STATUS_CODE.Created).json({
+        status: true,
+        message: "User has been successfully created. Check your email for confirmation.",
+        user: {
+          username,
+          email,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(STATUS_CODE.Internal).json({
+        status: false,
+        message: "Something went wrong, try again...",
+        error,
+      });
+    }
+  },
+
+  login: async (req, res) => {
+    console.log(req.body);
+    const { username, password } = req.body;
+    try {
+      const userExist = await dbFunctions.selectById('users', 'username', username);
+      console.log(userExist);
+      if (!userExist) {
+        return res.status(STATUS_CODE.Bad_Request).json({
+          status: false,
+          message: "Incorrect username or password... enter correct credential",
+        });
+      }
+      const isMatched = await bcrypt.compare(password, userExist.password);
+      console.log(isMatched);
+      if (!isMatched) {
+        return res.status(STATUS_CODE.Bad_Request).json({
+          status: false,
+          message: "Incorrect username or password... enter correct credential",
+        });
+      }
+      const payload = {
+        id: userExist.id,
+        username: userExist.username,
+      };
+      const secretOrPrivateKey = process.env.SECRET_PRIVATE_KEY;
+
+      const token = jwt.sign(payload, secretOrPrivateKey, { expiresIn: "1d" });
+
+      res.setHeader(
+        "Set-Cookie",
+        cookie.serialize("token", token, {
+          httpOnly: true,
+          maxAge: 86400, // Expires in 1 day (1d * 24h * 60m * 60s)
+          path: "/",
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+        })
+      );
+
+      res.status(STATUS_CODE.Success).json({
+        status: true,
+        message: "User has been successfully logged in.",
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(STATUS_CODE.Internal).json({
+        status: false,
+        message: "Something went wrong try again...",
+        error,
+      });
+    }
+  },
+
+
+  logout: (req, res) => {
+    res.clearCookie("token");
+    console.log("Logging out the user");
+    res.redirect("/");
+  },
+  resetPassword: async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(STATUS_CODE.Bad_Request).json({
+        status: false,
+        message: "Please provide your email address.",
+      });
+    }
+
+    try {
+      // Check if the user with the provided email exists
+      const user = await dbFunctions.selectById('users', 'email', email);
+
+      if (!user) {
+        return res.status(STATUS_CODE.Not_Found).json({
+          status: false,
+          message: "User with this email address does not exist.",
+        });
+      }
+
+      // Generate a unique token for password reset
+      const resetToken = generateResetToken();
+
+      // Save the reset token and expiration time in the database
+      const resetData = {
+        email: user.email,
+        resetToken: resetToken,
+        resetExpires: Date.now() + 3600000, // Token expires in 1 hour
+      };
+      await dbFunctions.createData('password_resets', resetData);
+
+      // Send the password reset email with the reset link
+      const resetLink = `${process.env.APP_URL}/reset-password?token=${resetToken}`;
+      nodemailer.sendMessage(
+        user.username,
+        user.email,
+        'Password Reset',
+        `Click the following link to reset your password: ${resetLink}`
+      );
+
+      return res.status(STATUS_CODE.Success).json({
+        status: true,
+        message: `Password reset link has been sent to ${email}. Check your email.`,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(STATUS_CODE.Internal).json({
+        status: false,
+        message: "Something went wrong, try again later.",
+        error: error.message,
+      });
+    }
+  },
+
+  createNewPassword: async (req, res) => {
+    const { resetToken, newPassword } = req.body;
+
+    if (!resetToken || !newPassword) {
+      return res.status(STATUS_CODE.Bad_Request).json({
+        status: false,
+        message: "Reset token and new password are required.",
+      });
+    }
+
+    try {
+      // Check if there is a matching reset token in the database
+      const resetData = await dbFunctions.selectById('password_resets', 'resetToken', resetToken);
+
+      if (!resetData || resetData.resetExpires < Date.now()) {
+        return res.status(STATUS_CODE.Bad_Request).json({
+          status: false,
+          message: "Invalid or expired reset token.",
+        });
+      }
+
+      // Update the user's password in the database
+      const salt = bcrypt.genSaltSync(10);
+      const hashedPassword = bcrypt.hashSync(newPassword, salt);
+
+      await dbFunctions.updateData('users', resetData.email, { password: hashedPassword });
+
+      // Delete the used reset token from the database
+      await dbFunctions.deleteData('password_resets', resetData.id);
+
+      return res.status(STATUS_CODE.Success).json({
+        status: true,
+        message: "Password updated successfully.",
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(STATUS_CODE.Internal).json({
+        status: false,
+        message: "Something went wrong, try again later.",
+        error: error.message,
+      });
+    }
+  },
+};
+
+function generateResetToken() {
+    const token = require('crypto').randomBytes(20).toString('hex');
+    return token;
+  }
+
+module.exports = Auth;
