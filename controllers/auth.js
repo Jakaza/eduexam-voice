@@ -61,58 +61,62 @@ register: async (req, res) => {
 },
 
 
-  login: async (req, res) => {
-    console.log(req.body);
-    const { username, password } = req.body;
-    try {
-      const userExist = await dbFunctions.selectById('users', 'username', username);
-      console.log(userExist);
+login: async (req, res) => {
+  console.log(req.body);
+  const { email, password } = req.body;
+
+  try {
+      const userExist = await dbFunctions.selectByEmail('users', email);
+
       if (!userExist) {
-        return res.status(STATUS_CODE.Bad_Request).json({
-          status: false,
-          message: "Incorrect username or password... enter correct credential",
-        });
+          return res.status(STATUS_CODE.Bad_Request).json({
+              status: false,
+              message: "Incorrect username or password... enter correct credentials",
+          });
       }
+
       const isMatched = await bcrypt.compare(password, userExist.password);
-      console.log(isMatched);
+
       if (!isMatched) {
-        return res.status(STATUS_CODE.Bad_Request).json({
-          status: false,
-          message: "Incorrect username or password... enter correct credential",
-        });
+          return res.status(STATUS_CODE.Bad_Request).json({
+              status: false,
+              message: "Incorrect username or password... enter correct credentials",
+          });
       }
+
       const payload = {
-        id: userExist.id,
-        username: userExist.username,
+          id: userExist.user_id,
+          username: userExist.username,
       };
+
       const secretOrPrivateKey = process.env.SECRET_PRIVATE_KEY;
 
       const token = jwt.sign(payload, secretOrPrivateKey, { expiresIn: "1d" });
 
       res.setHeader(
-        "Set-Cookie",
-        cookie.serialize("token", token, {
-          httpOnly: true,
-          maxAge: 86400, // Expires in 1 day (1d * 24h * 60m * 60s)
-          path: "/",
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
-        })
+          "Set-Cookie",
+          cookie.serialize("token", token, {
+              httpOnly: true,
+              maxAge: 86400, // Expires in 1 day (1d * 24h * 60m * 60s)
+              path: "/",
+              secure: process.env.NODE_ENV === "production",
+              sameSite: "strict",
+          })
       );
 
       res.status(STATUS_CODE.Success).json({
-        status: true,
-        message: "User has been successfully logged in.",
+          status: true,
+          message: "User has been successfully logged in.",
       });
-    } catch (error) {
+  } catch (error) {
       console.error(error);
       res.status(STATUS_CODE.Internal).json({
-        status: false,
-        message: "Something went wrong try again...",
-        error,
+          status: false,
+          message: "Something went wrong, try again...",
+          error,
       });
-    }
-  },
+  }
+},
 
 
   logout: (req, res) => {

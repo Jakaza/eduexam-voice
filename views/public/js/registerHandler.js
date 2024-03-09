@@ -37,7 +37,7 @@ document.getElementById('register-form').addEventListener('submit', function (ev
         })
         .then(data => {
             if (data.status === true) {
-                window.location.href = `/login?new=welcome`;
+                window.location.href = `/login?isNewUser=true`;
               } else {
                 document.querySelector('#server-error').textContent = `${data.message}`
               }
