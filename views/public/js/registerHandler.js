@@ -19,7 +19,7 @@ document.getElementById('register-form').addEventListener('submit', function (ev
 
 
     
-    fetch('http://localhost:3000/auth/register', {
+    fetch('https://eduexam-voice.onrender.com/auth/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
