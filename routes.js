@@ -18,6 +18,7 @@ router.get("/register",  Page.register);
 
 // Lecturer
 router.get("/test/view/:module_id",  Page.viewTest);
+router.get("/question/view",  Page.viewQuestion);
 
 
 // AUTH 
@@ -30,6 +31,10 @@ router.post('/module/create', Module.create)
 router.delete('/module/delete/:moduleID', Module.delete)
 
 // TEST
+router.post('/test/create', Test.create)
+router.delete('/test/delete/:testID', Test.delete)
+
+// QUESTION
 router.post('/test/create', Test.create)
 router.delete('/test/delete/:testID', Test.delete)
 

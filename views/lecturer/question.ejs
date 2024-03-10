@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Welcome Online Exam</title>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/css/font/flaticon.css">
+    <link href="https://fonts.googleapis.com/css?family=Fira+Sans|Josefin+Sans" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="description" content="Online Exam">
+    <meta name="author" content="Akhil Regonda">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <div class="oq-header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class=""><a href="/"><img src="/images/quiz.png" class="oq-logo"></a></div>
+                </div>
+                <div class="col-md-8">
+                    <div class="oq-userArea pull-right">
+                        <a href="/test/view/<%=testId%>"><span
+                                class="glyphicon glyphicon-arrow-left"></span> Back</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="adminmenu.php"><span
+                                class="glyphicon glyphicon-home"></span>&nbsp;&nbsp;Home</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <a class="oq-btn" href="/auth/logout">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="oq-viewTestsBody">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-10 col-md-offset-1">
+                    <div class="oq-viewTests">
+                        <div class="oq-testsHead">
+                            <!-- <?php
+                                                    if(isset($_GET['error'])){
+                                                        echo "<div class='row'><div class='col-md-12'><div class='pull-right'><span class='oq-error'>*Question already exists!</span></div></div></div><br>";
+                                                    }
+                                                ?> -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <span class="oq-testsHeadText"><?php echo strtoupper($test);?></span>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <a href="savetest.php?test=<?php echo $test;?>" class="oq-btn">View the quiz</a>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="pull-right">
+                                        <a class="oq-addbtn" data-toggle="modal" data-target=".newtest">Add New
+                                            Question</a>
+                                    </div>
+                                </div>
+                            </div><br>
+                            <span>List of questions are shown below:</span>
+                        </div>
+
+
+
+                        <div class="modal fade newtest" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <div class="oq-questionModal">
+                                            <form class="form" action="createquestions.php" method="post">
+                                                <span>Guidelines</span><br><br>
+                                                <textarea class="form-control" placeholder="Enter guidelines"
+                                                    name="guidelines"></textarea><br>
+                                                <span>Question</span><br><br>
+                                                <textarea class="form-control" placeholder="Enter the question"
+                                                    name="title" required></textarea><br>
+                                              
+                                                <div class="row">
+                                               
+
+                                                    <input type="hidden" class="form-control" placeholder=""
+                                                        name='assessment_id' value='<?php echo $test?>' hidden="true">
+
+                                                </div><br>
+                                                <br><br>
+                                                <input type="submit" class="form-control oq-btn" value="Create question"
+                                                    name="newques">
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <table class="table oq-table">
+                            <tbody>
+                                <% if (questions && questions.length > 0) { %>
+                                    <% questions.forEach((question, index) => { %>
+                                        <% if (question.guidelines) { %>
+                                            <tr>
+                                                <td colspan="3"><%= question.guidelines %></td>
+                                            </tr>
+                                        <% } %>
+                                        <tr>
+                                            <td>Question <%= index + 1 %></td>
+                                            <td><%= question.question_text %><br><br>
+                                               <br>
+                                                <div class="row">
+                                                    <div class="col-md-10 offset-md-1"><span class="oq-news">Explanation:</span><br><br></div>
+                                                </div>
+                                            </td>
+                                            <td class="oq-operations">
+                                                <a data-toggle="modal" data-target=".<%= question.question_id %>" class="oq-btn"><span class="glyphicon glyphicon-pencil"></span> Edit Question</a><br><br>
+                                                <a data-toggle="modal" data-target=".del<%= question.question_id %>" class="oq-deletebtn"><span class="glyphicon glyphicon-remove"></span> Delete</a>
+                                            </td>
+                                        </tr>
+                                        <div class="modal fade <%= question.question_id %>" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-body">
+                                                        <div class="oq-questionModal">
+                                                            <form class="form" action="upquestions.php" method="post">
+                                                                <span>Guidelines</span><br><br>
+                                                                <textarea class="form-control" name="guidelines"><%= question.guidelines %></textarea><br>
+                                                                <span>Question</span><br><br>
+                                                                <input type="hidden" class="form-control" value="<%= question.question_id %>" name="qid">
+                                                                <textarea class="form-control" name="title"><%= question.question_text %></textarea><br>
+                                                                <div class="row">
+                                                                    <div class="col-md-6">
+                                                                        <div class="form-inline"><input type="radio" name="answer" value="A" <%= question.answer === 'A' ? 'checked' : '' %>> &nbsp;A) &nbsp;<input type="text" class="form-control" name="option1" value="<%= question.option1 %>" required></div>
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <div class="form-inline"><input type="radio" name="answer" value="B" <%= question.answer === 'B' ? 'checked' : '' %>> &nbsp;B) &nbsp;<input type="text" class="form-control" name="option2" value="<%= question.option2 %>" required></div>
+                                                                    </div>
+                                                                </div><br>
+                                                                <div class="row">
+                                                                    <div class="col-md-6">
+                                                                        <div class="form-inline"><input type="radio" name="answer" value="C" <%= question.answer === 'C' ? 'checked' : '' %>> &nbsp;C) &nbsp;<input type="text" class="form-control" name="option3" value="<%= question.option3 %>" required></div>
+                                                                    </div>
+                                                                </div><br><br>
+                                                                <input type="submit" class="form-control oq-btn" value="Update question" name="upques">
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal fade del<%= question.question_id %>" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+                                            <div class="modal-dialog modal-sm" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-body">
+                                                        <div class="oq-questionModal">
+                                                            <span>Are you sure you want to delete?</span><br><br>
+                                                            <form class="form" action="quesdel.php" method="post">
+                                                                <input type="hidden" name="delval" value="<%= question.question_id %>">
+                                                                <input type="submit" name="qusdelete" value="Yes" class="oq-deletebtn form-control"><br>
+                                                                <input type="button" value="No" class="oq-btn form-control" data-dismiss="modal"> 
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="3" class="oq-news">No questions available</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+        <script src="/js/jquery-3.1.1.min.js"></script>
+        <script src="/js/bootstrap.js"></script>
+</body>
+
+</html>

@@ -15,6 +15,24 @@ const Page = {
       module_id: module_id ? module_id : 0
     });
   },
+  viewQuestion: async (req, res) => {
+    const testId = req.query.test; // Get the value of the 'test' query parameter
+    try {    
+      const pageNumber = 1; 
+      const questions = await dbFunctions.selectWithCondition('questions', { test_id: testId }, 1);
+
+      console.log(questions);
+
+
+      return res.render("lecturer/question", {
+        questions: questions ? questions : [],
+        testId: testId
+      });
+    }catch(error){
+      console.log(error);
+    }
+  },
+
   register: async (req, res) => {
     try {
       const pageNumber = 1; 
