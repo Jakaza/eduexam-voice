@@ -4,6 +4,17 @@ const { ROLES } = require("../constants/");
 const dbFunctions = require('../config/dbFunctions');
 
 const Page = {
+  viewTest: async (req, res) => {
+
+    const { module_id } = req.params;
+
+    const tests = await dbFunctions.selectWithCondition('tests', { module_id }, 1);
+
+    res.render("lecturer/test", { 
+      tests : tests ? tests : [],
+      module_id: module_id
+    });
+  },
   register: async (req, res) => {
     try {
       const pageNumber = 1; 
