@@ -12,7 +12,7 @@ const Page = {
 
     res.render("lecturer/test", { 
       tests : tests ? tests : [],
-      module_id: module_id
+      module_id: module_id ? module_id : 0
     });
   },
   register: async (req, res) => {

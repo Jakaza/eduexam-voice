@@ -88,17 +88,17 @@
                                             <td><%= test.test_name %></td>
                                             <td><%= test.testtime %> Mins</td>
                                             <td class='oq-testsoperations'>
-                                                <a data-toggle='modal' data-target='<%= "." + test.test_id %>' class='oq-editbtn'>
+                                                <!-- <a data-toggle='modal' data-target='<%= "." + test.test_id %>' class='oq-editbtn'>
                                                     <span class='glyphicon glyphicon-pencil'></span> Edit
-                                                </a> 
+                                                </a>  -->
                                                 &nbsp;
-                                                <a href='<%= "/viewquestions.php?test=" + test.test_id %>' class='oq-btn'>
+                                                <a href='<%= "/question/view?test=" + test.test_id %>' class='oq-btn'>
                                                     <span class='glyphicon glyphicon-pencil'></span> Add/Modify questions
                                                 </a> 
-                                                &nbsp;
+                                                <!-- &nbsp;
                                                 <a data-toggle='modal' data-target='<%= ".del" + test.test_id %>' class='oq-deletebtn'>
                                                     <span class='glyphicon glyphicon-remove'></span> Delete
-                                                </a>
+                                                </a> -->
                                             </td>
                                         </tr>
                                         <div class='modal fade <%= test.test_id %>' tabindex='-1' role='dialog' aria-labelledby='mySmallModalLabel'>
@@ -110,7 +110,7 @@
                                                             <input type='hidden' value='<%= test.test_id %>' name='test_id'>
                                                             <input type='hidden' value='<%= test.test_name %>' name='test'>
                                                             <span>Test Title</span><br><br>
-                                                            <input type='text' class='form-control' value='<%= test.test_name %>' name='test_name' required><br><br>
+                                                            <input type='text' class='form-control' value='<%= test.test_name %>' name='title' required><br><br>
                                                             <br><br>
                                                             <input type='submit' class='form-control oq-btn' value='Update' name='update'>
                                                         </form>

@@ -1,8 +1,20 @@
 document.getElementById('login-form').addEventListener('submit', function (event) {
     event.preventDefault();
+
+    const loginBtn = document.getElementById('login');
+
+    // Show loading indicator
+    loginBtn.disabled = true;
+    loginBtn.value = 'Logging In...';
+
+
+
     if (!validateLoginForm()) {
         return;
     }
+
+
+
     const form = document.getElementById('login-form');
     const formData = new FormData(form);
     const jsonFormData = {};
@@ -29,13 +41,16 @@ document.getElementById('login-form').addEventListener('submit', function (event
             if (data.status === true) {
                 window.location.href = "/";
             } else {
-                document.querySelector('#welcome-message').textContent = `${data.message}`;
-                document.querySelector('#welcome-message').style.display = "block";
+                loginBtn.disabled = false;
+                loginBtn.value = 'Login';
+                document.getElementById('login-error-msg').textContent = `${data.message}`;
             }
         })
         .catch(error => {
             // Handle errors
-            document.querySelector('#server-error').textContent =
+            loginBtn.disabled = false;
+            loginBtn.value = 'Login';
+            document.getElementById('login-error-msg').textContent =
                 'There was a problem with the login operation: try again';
         });
 });
