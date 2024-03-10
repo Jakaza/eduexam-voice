@@ -191,7 +191,7 @@
     createBtn.disabled = true;
     createBtn.value = 'Creating Module...';
 
-    fetch('http://localhost:3000/module/create', {
+    fetch('https://eduexam-voice.onrender.com/module/create', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -238,7 +238,7 @@ document.getElementById('delete-module-form').addEventListener('submit', functio
         // Show loading indicator
         deleteBtn.disabled = true;
         deleteBtn.value = 'Deleting Module...';
-        fetch(`http://localhost:3000/module/delete/${moduleId}`, {
+        fetch(`https://eduexam-voice.onrender.com/module/delete/${moduleId}`, {
             method: 'DELETE'
         })
         .then(response => {

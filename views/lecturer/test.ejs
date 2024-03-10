@@ -172,7 +172,7 @@
     createBtn.disabled = true;
     createBtn.value = 'Creating Test...';
 
-    fetch('http://localhost:3000/test/create', {
+    fetch('https://eduexam-voice.onrender.com/test/create', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -220,7 +220,7 @@ document.getElementById('delete-test-form').addEventListener('submit', function(
         // Show loading indicator
         deleteBtn.disabled = true;
         deleteBtn.value = 'Deleting Test...';
-        fetch(`http://localhost:3000/test/delete/${testId}`, {
+        fetch(`https://eduexam-voice.onrender.com/test/delete/${testId}`, {
             method: 'DELETE'
         })
         .then(response => {
