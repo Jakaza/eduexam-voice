@@ -2,18 +2,19 @@ const {
   createData,
   deleteData,
   updateData,
-} = require('./dbFunctions'); 
+} = require('../config/dbFunctions'); 
 
 const Module = {
   create: async (req, res, next) => {
     try {
-      const { module_name, module_code } = req.body;
-      if (!module_name || !module_code) {
+      const { module_name, module_code , course_id} = req.body;
+      if (!module_name || !module_code || !course_id) {
         return res.status(400).json({ status: false, message: 'Module name and module code are required.' });
       }
       const newModule = {
         module_name,
         module_code,
+        course_id
       };
       await createData('modules', newModule);
       res.status(201).json({ status: true, message: 'Module created successfully.' });

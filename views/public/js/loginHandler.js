@@ -1,16 +1,18 @@
-document.getElementById('loginForm').addEventListener('submit', function (event) {
+document.getElementById('login-form').addEventListener('submit', function (event) {
     event.preventDefault();
     if (!validateLoginForm()) {
         return;
     }
-    const form = document.getElementById('loginForm');
+    const form = document.getElementById('login-form');
     const formData = new FormData(form);
     const jsonFormData = {};
     formData.forEach((value, key) => {
         jsonFormData[key] = value;
     });
     const postData = { ...jsonFormData };
-    fetch('http://localhost:5000/auth/login', {
+
+    console.log(postData);
+    fetch('http://localhost:3000/auth/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -39,8 +41,8 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
 });
 
 function validateLoginForm() {
-    const email = document.querySelector('#loginForm input[name="email"]').value;
-    const password = document.querySelector('#loginForm input[name="password"]').value;
+    const email = document.querySelector('#login-form input[name="email"]').value;
+    const password = document.querySelector('#login-form input[name="password"]').value;
 
     document.querySelectorAll('.oq-error').forEach(errorSpan => {
         errorSpan.textContent = '';

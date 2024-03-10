@@ -23,10 +23,21 @@ const selectDataWithPagination = async (tableName, pageNumber) => {
     const result = await pool.query(query, [email]);
   
     if (result.rows.length > 0) {
-      return result.rows[0][columnName];
+      return result.rows[0];
     } else {
       return null; 
     }
+};
+
+const selectById = async (tableName, id) => {
+  const query = `SELECT * FROM ${tableName} WHERE user_id = $1`;
+  const result = await pool.query(query, [id]);
+
+  if (result.rows.length > 0) {
+    return result.rows[0];
+  } else {
+    return null; 
+  }
 };
 
 const updateData = async (tableName, id, updateFields) => {
@@ -52,10 +63,40 @@ const createData = async (tableName, data) => {
     await pool.query(query, values);
 };
 
+const selectWithCondition = async (tableName, conditions, pageNumber) => {
+  const pageSize = 10;
+  const offset = (pageNumber - 1) * pageSize;
+
+  let whereClause = '';
+  const values = [];
+  if (conditions) {
+      const conditionKeys = Object.keys(conditions);
+      whereClause = 'WHERE ';
+      conditionKeys.forEach((key, index) => {
+          whereClause += `${key} = $${index + 1} `;
+          values.push(conditions[key]);
+          if (index < conditionKeys.length - 1) {
+              whereClause += 'AND ';
+          }
+      });
+  }
+
+  const query = `SELECT * FROM ${tableName} ${whereClause} LIMIT $${values.length + 1} OFFSET $${values.length + 2}`;
+  values.push(pageSize, offset);
+
+  const result = await pool.query(query, values);
+  return result.rows;
+};
+
+
+
+
 module.exports = {
   createData,
   deleteData,
   updateData,
   selectByEmail,
+  selectById,
+  selectWithCondition,
   selectDataWithPagination
 };

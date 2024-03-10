@@ -19,7 +19,7 @@ document.getElementById('register-form').addEventListener('submit', function (ev
 
 
     
-    fetch('http://localhost:5000/auth/register', {
+    fetch('http://localhost:3000/auth/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -41,6 +41,7 @@ document.getElementById('register-form').addEventListener('submit', function (ev
         })
         .catch(error => {
             // Handle errors
+            console.log(error);
             document.querySelector('#server-error').textContent =
                 'There was a problem with the register operation: try again';
         });

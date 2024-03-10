@@ -17,43 +17,46 @@ const Page = {
   login: (req, res) => {
     res.render("index");
   },
-    homePage: (req, res, next) => {
-        passport.authenticate("jwt", { session: false }, (err, user, info) => {
-          if (err) {
+  homePage : (req, res, next) => {
+    passport.authenticate("jwt", { session: false },async (err, user, info) => {
+        if (err) {
             return res.status(500).render("error/server");
-          }
-          if (!user) {
+        }
+        if (!user) {
             return res.render("index", { isAuthenticated: false });
-          }
-          if (user.roles == ROLES.Admin) {
-            res.render("admin/main",{
-              isAuthenticated: req.isAuthenticated,
-              user: user,
+        }
+
+        if (user.user_role === ROLES.Admin) {
+            return res.render("admin/main", {
+                user: user,
             });
-          }
-          else if(user.roles == ROLES.Lecturer){
+        } else if (user.user_role === ROLES.Lecturer) {
 
-            // Select Course And Modules
+          try {
+            
+          const pageNumber = 1; 
+          const modules = await dbFunctions.selectWithCondition('modules', { course_id: user.course_id }, 1);
 
-
-
-
-
-
+          console.log(modules);
 
 
-
-            res.render("lecturer/main", {
-              isAuthenticated: req.isAuthenticated,
-              user: user,
-            });
-          }
-          return res.render("student/main", {
-            isAuthenticated: req.isAuthenticated,
+          return res.render("lecturer/menu", {
             user: user,
+            modules: modules ? modules : []
           });
-        })(req, res, next);
-      }
+          } catch (error) {
+            console.log(error);
+          }
+
+        } else if(user.user_role === ROLES.Student) {
+            return res.render("student/main", {
+                user: user,
+            });
+        }
+
+        res.render("index")
+    })(req, res, next);
+}
 }
 
 

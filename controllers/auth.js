@@ -8,7 +8,7 @@ const { STATUS_CODE, ROLES } = require("../constants/");
 const Auth = {
 register: async (req, res) => {
   console.log(req.body);
-  const { first_name, last_name, email, password_hash, rsa_id, user_role, phone_number, user_address, course_id } = req.body;
+  let { first_name, last_name, email, password_hash, rsa_id, user_role, phone_number, user_address, course_id } = req.body;
   if (!first_name || !last_name || !email || !password_hash || !rsa_id || !user_role || !course_id) {
       return res
           .status(STATUS_CODE.Bad_Request)
@@ -21,6 +21,10 @@ register: async (req, res) => {
               .status(STATUS_CODE.Bad_Request)
               .json({ status: false, message: "Email is already taken" });
       }
+
+      const salt = bcrypt.genSaltSync(10);
+      password_hash = bcrypt.hashSync(password_hash, salt);
+
       const newUser = {
           first_name,
           last_name,
@@ -61,17 +65,20 @@ login: async (req, res) => {
   const { email, password } = req.body;
   try {
       const userExist = await dbFunctions.selectByEmail('users', email);
+
+      console.log(userExist);
+
       if (!userExist) {
           return res.status(STATUS_CODE.Bad_Request).json({
               status: false,
-              message: "Incorrect username or password... Enter correct credentials",
+              message: "Incorrect email or password... Enter correct credentials",
           });
       }
       const isMatched = await bcrypt.compare(password, userExist.password_hash);
       if (!isMatched) {
           return res.status(STATUS_CODE.Bad_Request).json({
               status: false,
-              message: "Incorrect username or password... Enter correct credentials",
+              message: "Incorrect email or password... Enter correct credentials",
           });
       }
       const payload = {
@@ -121,7 +128,7 @@ login: async (req, res) => {
 
     try {
       // Check if the user with the provided email exists
-      const user = await dbFunctions.selectById('users', 'email', email);
+      const user = await dbFunctions.selectById('users', email);
 
       if (!user) {
         return res.status(STATUS_CODE.Not_Found).json({
