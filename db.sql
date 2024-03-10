@@ -42,7 +42,6 @@ CREATE TABLE IF NOT EXISTS tests (
 CREATE TABLE IF NOT EXISTS questions (
     question_id SERIAL PRIMARY KEY,
     question_text VARCHAR(100) NOT NULL,
-    user_response VARCHAR(20) NOT NULL,
     test_id INT REFERENCES tests(test_id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
