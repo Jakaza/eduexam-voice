@@ -1,5 +1,13 @@
 document.getElementById('register-form').addEventListener('submit', function (event) {
     event.preventDefault();
+
+
+    const registerBtn= document.getElementById('register-btn');
+
+    // Show loading indicator
+    registerBtn.disabled = true;
+    registerBtn.value = 'Creating New Account...';
+
     if (!validateForm()) {
         return;
     }
@@ -36,11 +44,15 @@ document.getElementById('register-form').addEventListener('submit', function (ev
             if (data.status === true) {
                 window.location.href = `/login?isNewUser=true`;
               } else {
+registerBtn.disabled = false;
+    registerBtn.value = 'Create Account';
                 document.querySelector('#server-error').textContent = `${data.message}`
               }
         })
         .catch(error => {
             // Handle errors
+registerBtn.disabled = false;
+    registerBtn.value = 'Create Account';
             console.log(error);
             document.querySelector('#server-error').textContent =
                 'There was a problem with the register operation: try again';
