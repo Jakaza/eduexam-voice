@@ -50,9 +50,9 @@ const Module = {
   
   delete: async (req, res, next) => {
     try {
-      const { id } = req.params;
+      const { moduleID } = req.params;
 
-      await deleteData('modules', id);
+      await deleteData('modules', 'module_id', moduleID);
 
       res.status(200).json({ status: true, message: 'Module deleted successfully.' });
     } catch (error) {

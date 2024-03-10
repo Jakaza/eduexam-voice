@@ -49,9 +49,9 @@ const updateData = async (tableName, id, updateFields) => {
     await pool.query(query, values);
 };
 
-const deleteData = async (tableName, id) => {
-    const query = `DELETE FROM ${tableName} WHERE id = $1`;
-    await pool.query(query, [id]);
+const deleteData = async (tableName, columnName, value) => {
+  const query = `DELETE FROM ${tableName} WHERE ${columnName} = $1`;
+  await pool.query(query, [value]);
 };
 
 const createData = async (tableName, data) => {

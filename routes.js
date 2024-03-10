@@ -24,6 +24,7 @@ router.get('/auth/logout', Auth.logout)
 
 // MODULE
 router.post('/module/create', Module.create)
+router.delete('/module/delete/:moduleID', Module.delete)
 
 
 module.exports = router;

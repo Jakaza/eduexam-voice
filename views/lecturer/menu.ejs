@@ -100,7 +100,7 @@
                                                     <input type="hidden" value="<%=user.course_id%>" class="form-control" name="course_id" >
                                                 </div> <br>
                                                 <div class="col-md-4">
-                                                    <input type="submit" class="form-control oq-btn" value="Create" name="createModule">
+                                                    <input type="submit" id="oq-createbtn" class="form-control oq-btn" value="Create" name="createModule">
                                                 </div>
                                             </form>
                         </div><br><br>
@@ -126,13 +126,13 @@
                                 <span class="oq-modalLangHead">Delete the module</span><br><br>
                                 <div class="col-md-2"></div>
                                 <div class="col-md-4">
-                                    <select class="form-control" name="code">
+                                    <select class="form-control" id="module-select" name="code">
                                         <option value=''>Select Module</option>
                                         <% modules.forEach(module => { %>
-                                            <option value="<%= module.module_code %>"><%= module.module_name %></option>
+                                            <option value="<%= module.module_id %>"><%= module.module_name %></option>
                                         <% }); %>
                                     </select>
-                                </div>
+                                </div> <br>
                                 <div class="col-md-4">
                                     <input type="submit" class="form-control oq-deletebtn" value="Delete subject"
                                         name="subjectdelete">
@@ -171,6 +171,13 @@
     formData.forEach((value, key) => {
         jsonFormData[key] = value;
     });
+
+    const deleteBtn = document.getElementById('oq-createbtn');
+
+    // Show loading indicator
+    deleteBtn.disabled = true;
+    deleteBtn.value = 'Creating Module...';
+
     fetch('http://localhost:3000/module/create', {
         method: 'POST',
         headers: {
@@ -211,15 +218,14 @@
 document.getElementById('delete-module-form').addEventListener('submit', function(event) {
         event.preventDefault();
 
-        const formData = new FormData(this);
+        const moduleId = document.getElementById('module-select').value;
+        const deleteBtn = document.querySelector('.oq-deletebtn');
 
-        console.log(formData);
-
-        return;
-        
-        fetch('http://localhost:3000/module/delete', {
-            method: 'POST',
-            body: formData
+        // Show loading indicator
+        deleteBtn.disabled = true;
+        deleteBtn.value = 'Deleting Module...';
+        fetch(`http://localhost:3000/module/delete/${moduleId}`, {
+            method: 'DELETE'
         })
         .then(response => {
             if (!response.ok) {
@@ -229,7 +235,7 @@ document.getElementById('delete-module-form').addEventListener('submit', functio
         })
         .then(data => {
             console.log('Module deleted successfully:', data);
-            // Optionally, you can perform additional actions upon successful deletion
+            window.location.href = `/`;
         })
         .catch(error => {
             console.error('There was a problem with the delete module operation:', error);
