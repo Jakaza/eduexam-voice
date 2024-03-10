@@ -78,7 +78,7 @@ const Page = {
           }
 
         } else if(user.user_role === ROLES.Student) {
-            return res.render("student/main", {
+            return res.render("student/menu", {
                 user: user,
             });
         }

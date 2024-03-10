@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
 const dbFunctions = require("../config/dbFunctions");
-const {sendMessage} = require("../utils/nodemailer");
+//const {sendMessage} = require("../utils/nodemailer");
 const { STATUS_CODE, ROLES } = require("../constants/");
 
 const Auth = {
@@ -39,7 +39,7 @@ register: async (req, res) => {
       };
       await dbFunctions.createData('users', newUser);
       // Send confirmation email with student number
-      sendMessage(first_name, email, 'Registration Confirmation', 'Welcome to our platform!');
+     // sendMessage(first_name, email, 'Registration Confirmation', 'Welcome to our platform!');
       res.status(STATUS_CODE.Created).json({
           status: true,
           message: "User has been successfully created. Check your email for confirmation.",

@@ -50,4 +50,4 @@ async function sendMessage(userName, userEmail, userSubject, userMessage) {
   });
 }
 
-module.exports = { sendMessage };
+//module.exports = { sendMessage };
