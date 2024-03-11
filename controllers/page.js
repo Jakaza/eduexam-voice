@@ -9,10 +9,14 @@ const Page = {
     const { module_id } = req.params;
 
     const tests = await dbFunctions.selectWithCondition('tests', { module_id }, 1);
+    const modules = await dbFunctions.selectWithCondition('modules', { module_id }, 1);
 
+
+    console.log("modules ", modules);
     res.render("lecturer/test", { 
       tests : tests ? tests : [],
-      module_id: module_id ? module_id : 0
+      module_id: module_id ? module_id : 0,
+      module: modules[0]
     });
   },
   viewQuestion: async (req, res) => {
@@ -20,13 +24,15 @@ const Page = {
     try {    
       const pageNumber = 1; 
       const questions = await dbFunctions.selectWithCondition('questions', { test_id: testId }, 1);
+      const tests = await dbFunctions.selectWithCondition('tests', { test_id: testId }, 1);
 
-      console.log(questions);
+      console.log("tests ", tests);
 
 
       return res.render("lecturer/question", {
         questions: questions ? questions : [],
-        testId: testId
+        testId: testId,
+        test : tests[0]
       });
     }catch(error){
       console.log(error);
