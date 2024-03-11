@@ -258,7 +258,9 @@
             jsonFormData[key] = value;
           });
 
-          enableBtn()
+          const createBtn = document.getElementById("oq-createbtn");
+          createBtn.disabled = true;
+          createBtn.value = "Creating module...";
 
           fetch("/module/create", {
             method: "POST",

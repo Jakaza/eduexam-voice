@@ -4,7 +4,11 @@ document
   .getElementById("create-question-btn")
   .addEventListener("click", handleAddQuestion);
 
-  
+  function enableBtn(){
+    const createBtn = document.getElementById("create-question-btn");
+    createBtn.disabled = false;
+    createBtn.value = "Create";
+  }
 
 async function handleAddQuestion(e) {
     e.preventDefault();
@@ -18,6 +22,9 @@ async function handleAddQuestion(e) {
           console.log(jsonFormData);
             const url = "/question/create";
         if (status) {
+          const createBtn = document.getElementById("create-question-btn");
+          createBtn.disabled = true;
+          createBtn.value = "Create Question...";
                 const queryParams = new URLSearchParams(window.location.search);
                 const currentQuestionId = queryParams.get("test");
                 const currentURL = `/question/view?test=${currentQuestionId}`;
@@ -44,8 +51,10 @@ async function sendHttpRequest(URL, data , redirect_url = "") {
     if (!result.status) {
       console.log(result);
     }
+    enableBtn()
     window.location.href = redirect_url;
   } catch (error) {
+    enableBtn()
     console.log(error);
   }
 }
