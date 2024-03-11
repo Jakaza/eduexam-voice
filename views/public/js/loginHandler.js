@@ -17,7 +17,6 @@ document.getElementById("login-form").addEventListener("submit", function (event
   });
   const postData = { ...jsonFormData };
 
-  console.log(postData);
   fetch("http://localhost:3000/auth/login", {
     method: "POST",
     headers: {
@@ -26,15 +25,13 @@ document.getElementById("login-form").addEventListener("submit", function (event
     body: JSON.stringify(postData),
   })
     .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
       return response.json();
     })
     .then((data) => {
       if (data.status === true) {
         window.location.href = "/";
       } else {
+        document.getElementById("login-error-msg").textContent = `${data.message}`
         loginBtn.disabled = false;
         loginBtn.value = "Login";
       }
@@ -42,9 +39,10 @@ document.getElementById("login-form").addEventListener("submit", function (event
     .catch((error) => {
       // Handle errors
       loginBtn.disabled = false;
+      console.log(error);
       loginBtn.value = "Login";
       document.getElementById("login-error-msg").textContent =
-        "There was a problem with the login operation: try again";
+        "Something went wrong... try again";
     });
 });
 

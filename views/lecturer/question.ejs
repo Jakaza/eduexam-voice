@@ -148,6 +148,7 @@
                     </td>
                     <td class="oq-operations">
                       <a
+                        id="edit-question-form"
                         data-toggle="modal"
                         data-target=".<%= question.question_id %>"
                         class="oq-btn"
@@ -174,18 +175,12 @@
                           <div class="oq-questionModal">
                             <form
                               class="form"
-                              action=""
+                              action="/question/update/<%= question.question_id %>/<%= testId %>"
                               method="post"
                               id="update-question-form"
                             >
                               <br />
                               <span>Question</span><br /><br />
-                              <input
-                                type="hidden"
-                                class="form-control"
-                                value="<%= question.question_id %>"
-                                name="question_id"
-                              />
 
                               <textarea
                                 class="form-control"
@@ -196,7 +191,7 @@
                               <br /><br />
                               <input
                                 type="submit"
-                                class="form-control oq-btn"
+                                class="form-control oq-btn update-btn"
                                 value="Update question"
                                 name="upques"
                                 id="update-question-btn"
@@ -207,46 +202,7 @@
                       </div>
                     </div>
                   </div>
-                  <!-- <div
-                    class="modal fade del<%= question.question_id %>"
-                    tabindex="-1"
-                    role="dialog"
-                    aria-labelledby="mySmallModalLabel"
-                  >
-                    <div class="modal-dialog modal-sm" role="document">
-                      <div class="modal-content">
-                        <div class="modal-body">
-                          <div class="oq-questionModal">
-                            <span>Are you sure you want to delete?</span
-                            ><br /><br />
-                            <form
-                              class="form"
-                              action="quesdel.php"
-                              method="post"
-                            >
-                              <input
-                                type="hidden"
-                                name="delval"
-                                value="<%= question.question_id %>"
-                              />
-                              <input
-                                type="submit"
-                                name="qusdelete"
-                                value="Yes"
-                                class="oq-deletebtn form-control"
-                              /><br />
-                              <input
-                                type="button"
-                                value="No"
-                                class="oq-btn form-control"
-                                data-dismiss="modal"
-                              />
-                            </form>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div> -->
+
                   <% }); %> <% } else { %>
                   <tr>
                     <td colspan="3" class="oq-news">No questions available</td>
@@ -262,152 +218,155 @@
 
     <script src="/js/jquery-3.1.1.min.js"></script>
     <script src="/js/bootstrap.js"></script>
+    <script src="/js/questionHandler.js"></script>
 
-    <script>
+    <!-- <script>
       // Create Question
-      document
-        .querySelector("#create-question-form")
-        .addEventListener("submit", function (event) {
-          event.preventDefault();
+      // document
+      //   .querySelector("#create-question-form")
+      //   .addEventListener("submit", function (event) {
+      //     event.preventDefault();
 
-          const btn = document.getElementById("create-question-btn");
-          btn.disabled = true;
-          btn.value = "Creating question...";
+      //     const btn = document.getElementById("create-question-btn");
+      //     btn.disabled = true;
+      //     btn.value = "Creating question...";
 
-          const form = document.querySelector("#create-question-form");
-          const formData = new FormData(form);
+      //     const form = document.querySelector("#create-question-form");
+      //     const formData = new FormData(form);
 
-          const jsonFormData = {};
-          formData.forEach((value, key) => {
-            jsonFormData[key] = value;
-          });
+      //     const jsonFormData = {};
+      //     formData.forEach((value, key) => {
+      //       jsonFormData[key] = value;
+      //     });
 
-          fetch("http://localhost:3000/question/create", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(jsonFormData),
-          })
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error("Network response was not ok");
-              }
-              return response.json();
-            })
-            .then((data) => {
-              if (data.status === true) {
-                console.log("Module created successfully!");
-                console.log(data);
-                // Close the modal
-                const queryParams = new URLSearchParams(window.location.search);
-                const currentQuestionId = queryParams.get("test");
+      //     fetch("http://localhost:3000/question/create", {
+      //       method: "POST",
+      //       headers: {
+      //         "Content-Type": "application/json",
+      //       },
+      //       body: JSON.stringify(jsonFormData),
+      //     })
+      //       .then((response) => {
+      //         if (!response.ok) {
+      //           throw new Error("Network response was not ok");
+      //         }
+      //         return response.json();
+      //       })
+      //       .then((data) => {
+      //         if (data.status === true) {
+      //           console.log("Module created successfully!");
+      //           console.log(data);
+      //           // Close the modal
+      //           const queryParams = new URLSearchParams(window.location.search);
+      //           const currentQuestionId = queryParams.get("test");
 
-                const currentURL = `/question/view?test=${currentQuestionId}`;
-                window.location.href = currentURL;
-              } else {
-                console.error(`Error: ${data.message}`);
-                btn.disabled = false;
-                btn.value = "Create question";
-              }
-            })
-            .catch((error) => {
-              console.error(`Error: ${error.message}`);
-              btn.disabled = false;
-              btn.value = "Create question";
-            });
-        });
+      //           const currentURL = `/question/view?test=${currentQuestionId}`;
+      //           window.location.href = currentURL;
+      //         } else {
+      //           console.error(`Error: ${data.message}`);
+      //           btn.disabled = false;
+      //           btn.value = "Create question";
+      //         }
+      //       })
+      //       .catch((error) => {
+      //         console.error(`Error: ${error.message}`);
+      //         btn.disabled = false;
+      //         btn.value = "Create question";
+      //       });
+      //   });
 
-      document.addEventListener("submit", function (event) {
-        const form = event.target.closest("form");
-        if (!form) return; // If the submitted element is not a form, do nothing
 
-        if (form.id === "update-question-form") {
-          // Handle create question form submission
-          event.preventDefault();
 
-          const btn = document.getElementById("update-question-btn");
-          btn.disabled = true;
-          btn.value = "Updating question...";
 
-          const formData = new FormData(form);
+      // document.addEventListener("submit", function (event) {
+      //   const form = event.target.closest("form");
+      //   if (!form) return; // If the submitted element is not a form, do nothing
 
-          fetch("http://localhost:3000/question/create", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(Object.fromEntries(formData)),
-          })
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error("Network response was not ok");
-              }
-              return response.json();
-            })
-            .then((data) => {
-              if (data.status === true) {
-                console.log("Question created successfully!");
-                console.log(data);
-                // Close the modal or redirect to another page if needed
-              } else {
-                console.error(`Error: ${data.message}`);
-              }
-            })
-            .catch((error) => {
-              console.error(`Error: ${error.message}`);
-            })
-            .finally(() => {
-              btn.disabled = false;
-              btn.value = "Create question";
-            });
-        } else if (form.id === "update-question-form") {
-          // Handle update question form submission
-          event.preventDefault();
+      //   if (form.id === "update-question-form") {
+      //     // Handle create question form submission
+      //     event.preventDefault();
 
-          const btn = document.getElementById("update-question-btn");
-          btn.disabled = true;
-          btn.value = "Updating question...";
+      //     const btn = document.getElementById("update-question-btn");
+      //     btn.disabled = true;
+      //     btn.value = "Updating question...";
 
-          const formData = new FormData(form);
+      //     const formData = new FormData(form);
 
-          fetch("http://localhost:3000/question/update", {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(Object.fromEntries(formData)),
-          })
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error("Network response was not ok");
-              }
-              return response.json();
-            })
-            .then((data) => {
-              if (data.status === true) {
-                console.log("Question updated successfully!");
-                console.log(data);
-                const queryParams = new URLSearchParams(window.location.search);
-                const currentQuestionId = queryParams.get("test");
+      //     fetch("http://localhost:3000/question/create", {
+      //       method: "POST",
+      //       headers: {
+      //         "Content-Type": "application/json",
+      //       },
+      //       body: JSON.stringify(Object.fromEntries(formData)),
+      //     })
+      //       .then((response) => {
+      //         if (!response.ok) {
+      //           throw new Error("Network response was not ok");
+      //         }
+      //         return response.json();
+      //       })
+      //       .then((data) => {
+      //         if (data.status === true) {
+      //           console.log("Question created successfully!");
+      //           console.log(data);
+      //           // Close the modal or redirect to another page if needed
+      //         } else {
+      //           console.error(`Error: ${data.message}`);
+      //         }
+      //       })
+      //       .catch((error) => {
+      //         console.error(`Error: ${error.message}`);
+      //       })
+      //       .finally(() => {
+      //         btn.disabled = false;
+      //         btn.value = "Create question";
+      //       });
+      //   } else if (form.id === "update-question-form") {
+      //     // Handle update question form submission
+      //     event.preventDefault();
 
-                const currentURL = `/question/view?test=${currentQuestionId}`;
-                window.location.href = currentURL;
-              } else {
-                console.error(`Error: ${data.message}`);
-              }
-            })
-            .catch((error) => {
-              console.error(`Error: ${error.message}`);
-            })
-            .finally(() => {
-              btn.disabled = false;
-              btn.value = "Update question";
-            });
-        }
-      });
+      //     const btn = document.getElementById("update-question-btn");
+      //     btn.disabled = true;
+      //     btn.value = "Updating question...";
 
-      //     .querySelector("#update-question-form")
+      //     const formData = new FormData(form);
+
+      //     fetch("http://localhost:3000/question/update", {
+      //       method: "PUT",
+      //       headers: {
+      //         "Content-Type": "application/json",
+      //       },
+      //       body: JSON.stringify(Object.fromEntries(formData)),
+      //     })
+      //       .then((response) => {
+      //         if (!response.ok) {
+      //           throw new Error("Network response was not ok");
+      //         }
+      //         return response.json();
+      //       })
+      //       .then((data) => {
+      //         if (data.status === true) {
+      //           console.log("Question updated successfully!");
+      //           console.log(data);
+      //           const queryParams = new URLSearchParams(window.location.search);
+      //           const currentQuestionId = queryParams.get("test");
+
+      //           const currentURL = `/question/view?test=${currentQuestionId}`;
+      //           window.location.href = currentURL;
+      //         } else {
+      //           console.error(`Error: ${data.message}`);
+      //         }
+      //       })
+      //       .catch((error) => {
+      //         console.error(`Error: ${error.message}`);
+      //       })
+      //       .finally(() => {
+      //         btn.disabled = false;
+      //         btn.value = "Update question";
+      //       });
+      //   }
+      // });
+
       //     .addEventListener("submit", function (event) {
       //       event.preventDefault();
 
@@ -459,6 +418,6 @@
       //         });
       //     });
       //
-    </script>
+    </script> -->
   </body>
 </html>

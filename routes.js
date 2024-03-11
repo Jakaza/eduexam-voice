@@ -32,10 +32,11 @@ router.delete("/module/delete/:moduleID", Module.delete);
 // TEST
 router.post("/test/create", Test.create);
 router.delete("/test/delete/:testID", Test.delete);
+router.post("/test/update/:testID/:moduleID", Test.update);
 
 // QUESTION
 router.post("/question/create", Question.create);
-router.put("/question/update", Question.update);
 router.get("/question/delete/:questionID/:testId", Question.delete);
+router.post("/question/update/:questionID/:testId", Question.update);
 
 module.exports = router;

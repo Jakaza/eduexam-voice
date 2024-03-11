@@ -2,6 +2,7 @@ const {
   createData,
   deleteData,
   updateData,
+  updateWithCondition
 } = require('../config/dbFunctions');
 
 const Test = {
@@ -18,13 +19,19 @@ const Test = {
 
   update: async (req, res, next) => {
     try {
-      const { test_name, module_id } = req.body;
-      const { id } = req.params;
-      await updateData('tests', id, { test_name, module_id });
-      res.status(200).json({ status: true, message: 'Test updated successfully.' });
+      const { testID, moduleID } = req.params;
+      const { test_name } = req.body;
+      await updateWithCondition(
+        "tests",
+        {
+          test_name: test_name
+        },
+        { test_id: testID }
+      );
+      res.redirect(`/test/view/${moduleID}`);
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ status: false, message: 'Internal server error.' });
+      console.log(error);
+      res.redirect(`/test/view/${moduleID}`);
     }
   },
   

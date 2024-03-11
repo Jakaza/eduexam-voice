@@ -22,23 +22,20 @@ const Question = {
 
   update: async (req, res, next) => {
     try {
-      const { question_text, question_id } = req.body;
+      const { questionID, testId } = req.params;
+      const { question_text } = req.body;
 
       await updateWithCondition(
         "questions",
         {
-          question_text,
+          question_text: question_text
         },
-        { question_id: question_id }
+        { question_id: questionID }
       );
-      res
-        .status(200)
-        .json({ status: true, message: "Test updated successfully." });
+      res.redirect(`/question/view?test=${testId}`);
     } catch (error) {
       console.error(error);
-      res
-        .status(500)
-        .json({ status: false, message: "Internal server error." });
+      res.redirect(`/test/view/${moduleID}`);
     }
   },
 

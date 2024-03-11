@@ -124,9 +124,9 @@
                     <td><%= test.test_name %></td>
                     <td><%= test.testtime %> Mins</td>
                     <td class="oq-testsoperations">
-                      <!-- <a data-toggle='modal' data-target='<%= "." + test.test_id %>' class='oq-editbtn'>
+                      <a data-toggle='modal' data-target='<%= "." + test.test_id %>' class='oq-editbtn'>
                                                     <span class='glyphicon glyphicon-pencil'></span> Edit
-                                                </a>  -->
+                                                </a> 
                       &nbsp;
                       <a
                         href='<%= "/question/view?test=" + test.test_id %>'
@@ -135,10 +135,10 @@
                         <span class="glyphicon glyphicon-pencil"></span>
                         Add/Modify questions
                       </a>
-                      <!-- &nbsp;
-                                                <a data-toggle='modal' data-target='<%= ".del" + test.test_id %>' class='oq-deletebtn'>
-                                                    <span class='glyphicon glyphicon-remove'></span> Delete
-                                                </a> -->
+                      &nbsp;
+                        <!-- <a data-toggle='modal' data-target='<%= ".del" + test.test_id %>' class='oq-deletebtn'>
+                                  <span class='glyphicon glyphicon-remove'></span> Delete
+</a> -->
                     </td>
                   </tr>
                   <div
@@ -151,23 +151,14 @@
                     <div class="modal-dialog" role="document">
                       <div class="modal-content">
                         <div class="modal-body">
-                          <form class="form" action="uptests.php" method="get">
-                            <input
-                              type="hidden"
-                              value="<%= test.test_id %>"
-                              name="test_id"
-                            />
-                            <input
-                              type="hidden"
-                              value="<%= test.test_name %>"
-                              name="test"
-                            />
+                          <form class="form" action="/test/update/<%= test.test_id %>/<%=module_id %>" method="post">
+
                             <span>Test Title</span><br /><br />
                             <input
                               type="text"
                               class="form-control"
                               value="<%= test.test_name %>"
-                              name="title"
+                              name="test_name"
                               required
                             /><br /><br />
                             <br /><br />
