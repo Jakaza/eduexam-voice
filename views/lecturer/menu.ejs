@@ -264,7 +264,7 @@
           createBtn.disabled = true;
           createBtn.value = "Creating Module...";
 
-          fetch("https://eduexam-voice.onrender.com/module/create", {
+          fetch("http://localhost:3000/module/create", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -278,12 +278,14 @@
               return response.json();
             }})
             .then((data) => {
+              console.log(data);
               if (data.status === true) {
                 console.log("Module created successfully!");
                 console.log(data);
                 // Close the modal
                 window.location.href = `/`;
               } else {
+                console.log(data);
                 alert(data.message)
                 enableBtn()
               }
