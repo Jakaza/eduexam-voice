@@ -27,7 +27,7 @@ document.getElementById('register-form').addEventListener('submit', function (ev
 
 
     
-    fetch('http://localhost:3000/auth/register', {
+    fetch('/auth/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

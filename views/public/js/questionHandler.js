@@ -16,7 +16,7 @@ async function handleAddQuestion(e) {
           });
           const status = validateInput(jsonFormData.question_text, jsonFormData.test_id);
           console.log(jsonFormData);
-            const url = "http://localhost:3000/question/create";
+            const url = "/question/create";
         if (status) {
                 const queryParams = new URLSearchParams(window.location.search);
                 const currentQuestionId = queryParams.get("test");

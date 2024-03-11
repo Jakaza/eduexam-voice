@@ -260,7 +260,7 @@
           createBtn.disabled = true;
           createBtn.value = "Creating Test...";
 
-          fetch("http://localhost:3000/test/create", {
+          fetch("/test/create", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -311,7 +311,7 @@
           // Show loading indicator
           deleteBtn.disabled = true;
           deleteBtn.value = "Deleting Test...";
-          fetch(`https://eduexam-voice.onrender.com/test/delete/${testId}`, {
+          fetch(`/test/delete/${testId}`, {
             method: "DELETE",
           })
             .then((response) => {

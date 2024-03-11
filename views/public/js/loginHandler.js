@@ -17,7 +17,7 @@ document.getElementById("login-form").addEventListener("submit", function (event
   });
   const postData = { ...jsonFormData };
 
-  fetch("http://localhost:3000/auth/login", {
+  fetch("/auth/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

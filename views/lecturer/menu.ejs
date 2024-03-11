@@ -264,7 +264,7 @@
           createBtn.disabled = true;
           createBtn.value = "Creating Module...";
 
-          fetch("http://localhost:3000/module/create", {
+          fetch("/module/create", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -321,7 +321,7 @@
           deleteBtn.disabled = true;
           deleteBtn.value = "Deleting Module...";
           fetch(
-            `https://eduexam-voice.onrender.com/module/delete/${moduleId}`,
+            `/module/delete/${moduleId}`,
             {
               method: "DELETE",
             }
