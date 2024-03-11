@@ -2,6 +2,8 @@
 <html>
   <head>
     <title>Welcome to edu exam</title>
+
+
     <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
     <link rel="stylesheet" type="text/css" href="css/main.css" />
     <link rel="stylesheet" type="text/css" href="css/font/flaticon.css" />
@@ -126,8 +128,8 @@
                                                 }
                                             ?> -->
                 <form class="form" id="create-module" method="post">
-                  <span class="oq-modalLangHead">Create new module</span
-                  ><br /><br />
+                  <span class="oq-modalLangHead">Create new module</span> <br>
+                  <span id="module-create-error" style="color: rgb(198, 79, 79);"></span><br /><br />
                   <div class="col-md-2" id="module-error"></div>
                   <div class="col-md-4">
                     <input
@@ -271,10 +273,10 @@
           })
             .then((response) => {
               if (!response.ok) {
-                throw new Error("Network response was not ok");
-              }
+                alert("Fail to create a module")
+                enableBtn()
               return response.json();
-            })
+            }})
             .then((data) => {
               if (data.status === true) {
                 console.log("Module created successfully!");
@@ -282,19 +284,23 @@
                 // Close the modal
                 window.location.href = `/`;
               } else {
-                console.error(`Error: ${data.message}`);
-                const errorDiv = document.querySelector("#module-error");
-                errorDiv.textContent = `Error: ${data.message}`;
-                errorDiv.classList.add("text-danger");
+                alert(data.message)
+                enableBtn()
               }
             })
             .catch((error) => {
-              console.error(`Error: ${data.message}`);
-              const errorDiv = document.querySelector("#module-error");
-              errorDiv.textContent = `Error: ${data.message}`;
-              errorDiv.classList.add("text-danger");
+              enableBtn()
+              alert(error.message)
+              console.error(`Error: ${error}`);
             });
         });
+
+
+        function enableBtn(){
+          const createBtn = document.getElementById("oq-createbtn");
+          createBtn.disabled = false;
+          createBtn.value = "Create";
+        }
 
       // DELETE MODULE
 
@@ -320,6 +326,9 @@
           )
             .then((response) => {
               if (!response.ok) {
+                          // Show loading indicator
+          deleteBtn.disabled = false;
+          deleteBtn.value = "Deleting Module";
                 throw new Error("Network response was not ok");
               }
               return response.json();
@@ -329,6 +338,8 @@
               window.location.href = `/`;
             })
             .catch((error) => {
+              deleteBtn.disabled = false;
+          deleteBtn.value = "Deleting Module";
               document.getElementById("module-delete-error").textContent =
                 "There was a problem with the delete module operation";
 
@@ -336,9 +347,6 @@
                 document.getElementById("module-delete-error").textContent =
                   "*All the tests and questions of selected module will be lost if delete module is pressed";
               }, 5000);
-              deleteBtn.disabled = false;
-              deleteBtn.value = "Delete Module";
-
               console.error(
                 "There was a problem with the delete module operation:",
                 error

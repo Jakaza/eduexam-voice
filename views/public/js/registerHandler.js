@@ -1,16 +1,16 @@
 document.getElementById('register-form').addEventListener('submit', function (event) {
     event.preventDefault();
 
-
     const registerBtn= document.getElementById('register-btn');
-
-    // Show loading indicator
-    registerBtn.disabled = true;
-    registerBtn.value = 'Creating New Account...';
 
     if (!validateForm()) {
         return;
     }
+
+        // Show loading indicator
+        registerBtn.disabled = true;
+        registerBtn.value = 'Creating New Account...';
+
     const form = document.getElementById('register-form');
     const formData = new FormData(form);
     const jsonFormData = {};
@@ -27,7 +27,7 @@ document.getElementById('register-form').addEventListener('submit', function (ev
 
 
     
-    fetch('https://eduexam-voice.onrender.com/auth/register', {
+    fetch('http://localhost:3000/auth/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -42,7 +42,12 @@ document.getElementById('register-form').addEventListener('submit', function (ev
         })
         .then(data => {
             if (data.status === true) {
-                window.location.href = `/login?isNewUser=true`;
+
+                swal("Account has been successfully created", "Click ok to login", "success")
+                .then((value) => {
+                    window.location.href = `/login`;
+                  });
+
               } else {
 registerBtn.disabled = false;
     registerBtn.value = 'Create Account';
