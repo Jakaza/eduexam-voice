@@ -258,11 +258,7 @@
             jsonFormData[key] = value;
           });
 
-          const createBtn = document.getElementById("oq-createbtn");
-
-          // Show loading indicator
-          createBtn.disabled = true;
-          createBtn.value = "Creating Module...";
+          enableBtn()
 
           fetch("/module/create", {
             method: "POST",
@@ -272,11 +268,8 @@
             body: JSON.stringify(jsonFormData),
           })
             .then((response) => {
-              if (!response.ok) {
-                alert("Fail to create a module")
-                enableBtn()
               return response.json();
-            }})
+            })
             .then((data) => {
               console.log(data);
               if (data.status === true) {
@@ -286,13 +279,11 @@
                 window.location.href = `/`;
               } else {
                 console.log(data);
-                alert(data.message)
                 enableBtn()
               }
             })
             .catch((error) => {
               enableBtn()
-              alert(error.message)
               console.error(`Error: ${error}`);
             });
         });
