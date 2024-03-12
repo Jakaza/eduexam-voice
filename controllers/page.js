@@ -38,17 +38,15 @@ const Page = {
 
       if (user.user_role === ROLES.Student) {
 
+
         const { moduleName } = req.params;
 
-        const modules = await dbFunctions.selectWithCondition('modules', { "module_name" : user.course_id }, 1);
+        const decodedModuleName = moduleName.replace(/%20/g, ' ');
 
-
-
-
-          // return res.render("student/modules", {
-          //     user: user,
-          //     modules : modules ? modules : [],
-          // });
+          return res.render("student/module", {
+              user: user,
+              module_name: decodedModuleName
+          });
       }
 
       res.redirect("/")
