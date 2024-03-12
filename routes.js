@@ -15,9 +15,10 @@ router.get("/register", Page.register);
 // Admin
 
 // User
+router.get("/modules", Page.viewModules);
 
 // Lecturer
-router.get("/test/view/:module_id", Page.viewTest);
+router.get("/test/view/:module_id",isUserLoggedIn, Page.viewTest);
 router.get("/question/view", Page.viewQuestion);
 
 // AUTH
