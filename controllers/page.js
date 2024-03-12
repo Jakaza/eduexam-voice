@@ -35,20 +35,25 @@ const Page = {
       if (!user) {
           return res.render("index", { isAuthenticated: false });
       }
-
       if (user.user_role === ROLES.Student) {
 
-
         const { moduleName } = req.params;
-
         const decodedModuleName = moduleName.replace(/%20/g, ' ');
 
+        let modules = await dbFunctions.selectWithCondition('modules', { "module_name" : decodedModuleName }, 1);
+        const tests = []
+        
+        if (modules && modules.length > 0) {
+          const module_id = modules[0].module_id;
+          tests = await dbFunctions.selectWithCondition('tests', { "module_id" : module_id }, 1);
+        }
+ 
           return res.render("student/module", {
               user: user,
-              module_name: decodedModuleName
+              module_name: decodedModuleName, 
+              tests : tests ? tests : [],
           });
       }
-
       res.redirect("/")
   })(req, res, next);
   },
