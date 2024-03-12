@@ -45,7 +45,7 @@ document.getElementById('register-form').addEventListener('submit', function (ev
 
                 swal("Account has been successfully created", "Click ok to login", "success")
                 .then((value) => {
-                    window.location.href = `/login`;
+                    window.location.href = `/`;
                   });
 
               } else {
