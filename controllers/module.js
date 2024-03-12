@@ -11,8 +11,9 @@ const Module = {
       if (!module_name || !module_code || !course_id) {
         return res.status(400).json({ status: false, message: 'Module name and module code are required.' });
       }
+
       const newModule = {
-        module_name,
+        module_name: module_name.toLowerCase(),
         module_code,
         course_id
       };
