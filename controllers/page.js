@@ -4,6 +4,58 @@ const { ROLES } = require("../constants/");
 const dbFunctions = require('../config/dbFunctions');
 
 const Page = {
+
+  viewModules: async (req, res, next) =>{
+    passport.authenticate("jwt", { session: false },async (err, user, info) => {
+      if (err) {
+          return res.status(500).render("error/server");
+      }
+      if (!user) {
+          return res.render("index", { isAuthenticated: false });
+      }
+
+      if (user.user_role === ROLES.Student) {
+
+        const modules = await dbFunctions.selectWithCondition('modules', { "course_id" : user.course_id }, 1);
+          return res.render("student/modules", {
+              user: user,
+              modules : modules ? modules : [],
+          });
+      }
+
+      res.redirect("/")
+  })(req, res, next);
+  },
+
+  viewModule: async (req, res, next) =>{
+    passport.authenticate("jwt", { session: false },async (err, user, info) => {
+      if (err) {
+          return res.status(500).render("error/server");
+      }
+      if (!user) {
+          return res.render("index", { isAuthenticated: false });
+      }
+
+      if (user.user_role === ROLES.Student) {
+
+        const { moduleName } = req.params;
+
+        const modules = await dbFunctions.selectWithCondition('modules', { "module_name" : user.course_id }, 1);
+
+
+
+
+          // return res.render("student/modules", {
+          //     user: user,
+          //     modules : modules ? modules : [],
+          // });
+      }
+
+      res.redirect("/")
+  })(req, res, next);
+  },
+
+
   viewTest: async (req, res) => {
 
     const { module_id } = req.params;
@@ -71,10 +123,7 @@ const Page = {
             
           const pageNumber = 1; 
           const modules = await dbFunctions.selectWithCondition('modules', { course_id: user.course_id }, 1);
-
           console.log(modules);
-
-
           return res.render("lecturer/menu", {
             user: user,
             modules: modules ? modules : []
@@ -84,6 +133,8 @@ const Page = {
           }
 
         } else if(user.user_role === ROLES.Student) {
+
+
             return res.render("student/menu", {
                 user: user,
             });
