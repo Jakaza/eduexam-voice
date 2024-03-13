@@ -55,7 +55,12 @@
                         <% for (let i = 0; i < modules.length; i++) { %>
                             <span class="modules"><%= words[i] %>.</span><br>
                         <% } %>
-                        Choose one by saying the subject name or say repeat to repeat the list.</span>
+                        Choose one by saying the subject name or say repeat to repeat the list.
+    <% } else { %>
+                              There are no tests available to write for <%= module_name %> <br> <br> <span>You will be redirected to main page in seconds .</span>
+                            <% } %>
+
+</span>
                         <p id="spresult" class="spresult"></p>
                     </div>
 
@@ -89,6 +94,12 @@
         // console.log(JSON.parse(word.textContent));
         modulesCode.push(JSON.parse(word.textContent))
     });
+
+    if(words.length == 0){
+        setTimeout(function(){
+            window.location = "/"
+        }, 8000);
+    }
 
     // console.log(modulesCode);
 
