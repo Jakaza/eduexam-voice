@@ -13,11 +13,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-                    <% var words = [], k = 0; %>
+                    <% var words = [], module_code = [] , k = 0; %>
 
                     <% if (modules.length > 0) { %> 
                         <% modules.forEach(module => { %>
                             <% words[k] = module.module_name; %>
+                            <% module_code[k] = module; %>
                             <% console.log('Words:' + words); %>
                             <% k++; %>
                         <% }); %>
@@ -57,6 +58,12 @@
                         Choose one by saying the subject name or say repeat to repeat the list.</span>
                         <p id="spresult" class="spresult"></p>
                     </div>
+
+                    <span class="modules-hiden" style="display: none;">
+                        <% for (let i = 0; i < module_code.length; i++) { %>
+                            <span class="module-code-ob"><%= JSON.stringify(module_code[i]) %></span><br>
+                        <% } %>
+                    </span>
                 </div>
             </div>
         </div>
@@ -68,13 +75,29 @@
     <script type="text/javascript">
 
     var wordElement = document.querySelectorAll('.modules'); // Replace with the actual ID or class of the span
-    console.log(wordElement);
+    var moduleCodeElement = document.querySelectorAll('.module-code-ob'); // Replace with the actual ID or class of the span
+
     var words = []
+    var modulesCode = []
 
     wordElement.forEach(word => {
-        console.log(word.textContent.slice(0, -1));
+        // console.log(word.textContent.slice(0, -1));
         words.push(word.textContent.slice(0, -1))
     });
+
+    moduleCodeElement.forEach(word => {
+        // console.log(JSON.parse(word.textContent));
+        modulesCode.push(JSON.parse(word.textContent))
+    });
+
+    // console.log(modulesCode);
+
+    function findModuleCodeByName(moduleName) {
+    const module = modulesCode.find(module => module.module_name.toLowerCase().trim() === moduleName.toLowerCase().trim());
+        return module ? module.module_code : null;
+    }
+
+    console.log("findModuleCodeByName(module 2) :", findModuleCodeByName("module 2"));
 
     var syn = window.speechSynthesis;
     var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
@@ -119,7 +142,7 @@
                     syn.speak(testThis);
                     console.log(testThis);
                     testThis.onend = function(event) {
-                        window.location = "/modules/" + speechResult;
+                        window.location = "/modules/" + findModuleCodeByName(speechResult) ;
                     }
                     break;
                 } else if (speechResult === "repeat") {
