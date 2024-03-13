@@ -52,6 +52,8 @@
                 <div class="col-md-6 col-md-offset-3">
                     <div class="oq-menu">
                         <span id="oq-subjectsList">List of subjects are given below.<br><br>
+
+ <% if (tests.length > 0) { %>
                         <% for (let i = 0; i < modules.length; i++) { %>
                             <span class="modules"><%= words[i] %>.</span><br>
                         <% } %>
