@@ -38,7 +38,7 @@ This readme file provides an overview of the Exam Voice-Based Web Application. T
 
 
 ## Support
-If you encounter any issues or have questions about the application, please contact our support team at ....
+If you encounter any issues or have questions about the application, please contact our support team at 
 
 ## License
 This application is licensed under the [MIT License](https://opensource.org/licenses/MIT).
