@@ -2,8 +2,29 @@ const passport = require("passport");
 const cookie = require("cookie");
 const { ROLES } = require("../constants/");
 const dbFunctions = require('../config/dbFunctions');
+const json = require("body-parser/lib/types/json");
 
 const Page = {
+
+  
+  viewModuleTest: async (req, res, next) =>{
+    passport.authenticate("jwt", { session: false },async (err, user, info) => {
+      if (err) {
+          return res.status(500).render("error/server");
+      }
+      if (!user) {
+          return res.render("index", { isAuthenticated: false });
+      }
+
+      if (user.user_role === ROLES.Student) {
+          return res.render("comingsoon", {
+              user: user,
+          });
+      }
+
+      res.redirect("/")
+  })(req, res, next);
+  },
 
   viewModules: async (req, res, next) =>{
     passport.authenticate("jwt", { session: false },async (err, user, info) => {
@@ -40,8 +61,8 @@ const Page = {
         const { moduleName } = req.params;
         const decodedModuleName = moduleName.replace(/%20/g, ' ');
 
-        let modules = await dbFunctions.selectWithCondition('modules', { "module_name" : decodedModuleName }, 1);
-        const tests = []
+        let modules = await dbFunctions.selectWithConditionIgnoreCase('modules', { "module_code" : decodedModuleName, "course_id":  user.course_id}, 1);
+        let tests = []
         
         if (modules && modules.length > 0) {
           const module_id = modules[0].module_id;
@@ -50,13 +71,14 @@ const Page = {
  
           return res.render("student/module", {
               user: user,
-              module_name: decodedModuleName, 
+              module_name: modules ? modules.module_name : "", 
               tests : tests ? tests : [],
           });
       }
       res.redirect("/")
   })(req, res, next);
   },
+
 
 
   viewTest: async (req, res) => {
@@ -121,9 +143,7 @@ const Page = {
                 user: user,
             });
         } else if (user.user_role === ROLES.Lecturer) {
-
           try {
-            
           const pageNumber = 1; 
           const modules = await dbFunctions.selectWithCondition('modules', { course_id: user.course_id }, 1);
           console.log(modules);
@@ -137,12 +157,13 @@ const Page = {
 
         } else if(user.user_role === ROLES.Student) {
 
+          const courses = await dbFunctions.selectWithCondition('courses', { course_id: user.course_id }, 1);
 
             return res.render("student/menu", {
                 user: user,
+                course_name: courses[0].course_name
             });
         }
-
         res.render("index")
     })(req, res, next);
 }
