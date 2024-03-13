@@ -14,8 +14,8 @@
     <% var words = [], k = 0; %>
 
     <% if (tests.length > 0) { %> 
-        <% tests.forEach(module => { %>
-            <% words[k] = module.module_name; %>
+        <% tests.forEach(test => { %>
+            <% words[k] = test.test_name; %>
             <% console.log('Words:' + words); %>
             <% k++; %>
         <% }); %>
@@ -47,25 +47,12 @@
                 <div class="col-md-6 col-md-offset-3">
                     <div class="oq-menu">
 
-                        <!-- <script type="text/javascript">
-                        document.write(
-                            '<span id="oq-subjectsList">List of tests for the subject <?php echo $subject?> are..<br><br>'
-                        );
-                        for (i = 0; i < k; i++) {
-
-                            document.write("<span>" + words[i] + ".</span><br>");
-
-                        }
-                        document.write('Choose one by saying the test name or say repeat to repeat the list.</span>');
-                        </script> -->
-
-
                         <span id="oq-subjectsList">
                             
                             <% if (tests.length > 0) { %>
                                 List of tests for the subject <%= module_name %> are.. <br><br>
                               <% for (let i = 0; i < tests.length; i++) { %>
-                                <span class="tests"><%= words[i] %>.</span><br>
+                                <span class="tests"><%= words[i] %>.</span><br> <br>
                               <% } %>
                               Choose one by saying the test name or say repeat to repeat the list.
                             <% } else { %>
@@ -131,7 +118,7 @@
             var speechResult = event.results[0][0].transcript;
             console.log("speechResult:" + speechResult);
             console.log("words:" + words);
-            for (var i = 0; i < k; i++) {
+            for (var i = 0; i < words.length; i++) {
                 if (speechResult.toLowerCase() === words[i].toLowerCase()) {
                     flag = 1;
                     console.log("speech result: " + speechResult);
@@ -142,7 +129,7 @@
                     syn.speak(testThis);
                     console.log(testThis);
                     testThis.onend = function(event) {
-                        window.location = "test.php?test=" + speechResult;
+                        window.location = "/tests/210";
                     }
                     break;
                 } else if (speechResult === "repeat") {
@@ -160,7 +147,7 @@
                     break;
                 }
             }
-            if (i == k) {
+            if (i == words.length) {
                 flag = 2;
                 resultPara.textContent = 'Speech received: ' + speechResult + '. No such operation.';
                 var syn = window.speechSynthesis;
