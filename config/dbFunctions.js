@@ -122,6 +122,33 @@ const updateWithCondition = async (tableName, updateFields, conditions) => {
   await pool.query(query, values);
 };
 
+const selectWithConditionIgnoreCase = async (tableName, conditions, pageNumber) => {
+  const pageSize = 20;
+  const offset = (pageNumber - 1) * pageSize;
+
+  let whereClause = "";
+  const values = [];
+  if (conditions) {
+    const conditionKeys = Object.keys(conditions);
+    whereClause = "WHERE ";
+    conditionKeys.forEach((key, index) => {
+      whereClause += `${key.toLowerCase()} = $${index + 1} `;
+      values.push(conditions[key]);
+      if (index < conditionKeys.length - 1) {
+        whereClause += "AND ";
+      }
+    });
+  }
+
+  const query = `SELECT * FROM ${tableName} ${whereClause} LIMIT $${
+    values.length + 1
+  } OFFSET $${values.length + 2}`;
+  values.push(pageSize, offset);
+
+  const result = await pool.query(query, values);
+  return result.rows;
+};
+
 module.exports = {
   createData,
   deleteData,
@@ -131,4 +158,5 @@ module.exports = {
   selectWithCondition,
   selectDataWithPagination,
   updateWithCondition,
+  selectWithConditionIgnoreCase
 };
