@@ -4,12 +4,13 @@ const cookie = require("cookie");
 const dbFunctions = require("../config/dbFunctions");
 //const {sendMessage} = require("../utils/nodemailer");
 const { STATUS_CODE, ROLES } = require("../constants/");
+const { sendMessage } = require("../utils/nodemailer");
 
 const Auth = {
 register: async (req, res) => {
   console.log(req.body);
   let { first_name, last_name, email, password_hash, rsa_id, user_role, phone_number, user_address, course_id } = req.body;
-  if (!first_name || !last_name || !email || !password_hash || !rsa_id || !user_role || !course_id) {
+  if (!first_name || !last_name || !email || !password_hash || !rsa_id || !user_role , !phone_number , !user_address || !course_id) {
       return res
           .status(STATUS_CODE.Bad_Request)
           .json({ status: false, message: "Fill in all the required fields" });
@@ -25,7 +26,10 @@ register: async (req, res) => {
       const salt = bcrypt.genSaltSync(10);
       password_hash = bcrypt.hashSync(password_hash, salt);
 
+      const identification_number = generateIdentificationNumber()
+
       const newUser = {
+          identification_number,
           first_name,
           last_name,
           email,
@@ -34,21 +38,27 @@ register: async (req, res) => {
           user_role,
           phone_number,
           user_address,
+          registration_date: new Date(),
           course_id,
           created_at: new Date(),
       };
-      await dbFunctions.createData('users', newUser);
-      // Send confirmation email with student number
-     // sendMessage(first_name, email, 'Registration Confirmation', 'Welcome to our platform!');
-      res.status(STATUS_CODE.Created).json({
-          status: true,
-          message: "User has been successfully created. Check your email for confirmation.",
-          user: {
-              first_name,
-              last_name,
-              email,
-          },
-      });
+    await dbFunctions.createData('users', newUser);
+
+     const emailStatus = await sendMessage(first_name, last_name, identification_number , email , user_role , 'Registration Confirmation')
+
+     if (emailStatus) {
+      console.log("Email sent successfully.");
+      res.status(201).json({ status: true, message: "Test created successfully.", emailStatus: true ,          
+       user: {
+        first_name,
+        last_name,
+        email,
+    },});
+    } else {
+      console.log("Failed to send email.");
+      res.status(500).json({ status: false, message: "Failed to send email.", emailStatus: false });
+    }
+
   } catch (error) {
       console.error(error);
       res.status(STATUS_CODE.Internal).json({
@@ -62,16 +72,16 @@ register: async (req, res) => {
 
 login: async (req, res) => {
   console.log(req.body);
-  const { email, password } = req.body;
+  const { identification_number, password } = req.body;
   try {
-      const userExist = await dbFunctions.selectByEmail('users', email);
+      const userExist = await dbFunctions.selectWithCondition('users', {"identification_number": identification_number},1);
 
       console.log(userExist);
 
       if (!userExist) {
           return res.status(STATUS_CODE.Bad_Request).json({
               status: false,
-              message: "Incorrect email or password... Enter correct credentials",
+              message: "Incorrect identification number or password... Enter correct credentials",
           });
       }
       const isMatched = await bcrypt.compare(password, userExist.password_hash);
@@ -219,6 +229,16 @@ login: async (req, res) => {
 function generateResetToken() {
     const token = require('crypto').randomBytes(20).toString('hex');
     return token;
+  }
+
+  function generateIdentificationNumber() {
+    // Generate a random 6-digit number
+    const randomNumber = Math.floor(100000 + Math.random() * 900000);
+  
+    // Append "22" to the random number
+    const studentNumber = `22${randomNumber}`;
+  
+    return studentNumber;
   }
 
 module.exports = Auth;
