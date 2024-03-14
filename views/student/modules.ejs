@@ -56,9 +56,9 @@
 <span id="oq-subjectsList">
                             
     <% if (modules.length > 0) { %>
-        List of tests for the subject <%= module_name %> are.. <br><br>
+        List of subjects are given below. <br><br>
       <% for (let i = 0; i < modules.length; i++) { %>
-        <span class="tests"><%= words[i] %>.</span><br> <br>
+        <span class="modules"><%= words[i] %>.</span><br> <br>
       <% } %>
       Choose one by saying the test name or say repeat to repeat the list.
     <% } else { %>
@@ -99,7 +99,9 @@
         modulesCode.push(JSON.parse(word.textContent))
     });
 
-    if(words.length == 0){
+    console.log("words" , words);
+
+    if(words.length == 0 && modulesCode.length == 0){
         setTimeout(function(){
             window.location = "/"
         }, 7000);
