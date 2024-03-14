@@ -7,7 +7,6 @@ const app = express();
 const routes = require("./routes");
 const passport = require("passport");
 const initDB = require('./config/initDB')
-
 //  middlewares config
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
