@@ -51,18 +51,20 @@
             <div class="row">
                 <div class="col-md-6 col-md-offset-3">
                     <div class="oq-menu">
-                        <span id="oq-subjectsList">List of subjects are given below.<br><br>
+                        
 
- <% if (tests.length > 0) { %>
-                        <% for (let i = 0; i < modules.length; i++) { %>
-                            <span class="modules"><%= words[i] %>.</span><br>
-                        <% } %>
-                        Choose one by saying the subject name or say repeat to repeat the list.
+<span id="oq-subjectsList">
+                            
+    <% if (modules.length > 0) { %>
+        List of tests for the subject <%= module_name %> are.. <br><br>
+      <% for (let i = 0; i < modules.length; i++) { %>
+        <span class="tests"><%= words[i] %>.</span><br> <br>
+      <% } %>
+      Choose one by saying the test name or say repeat to repeat the list.
     <% } else { %>
-                              There are no tests available to write for <%= module_name %> <br> <br> <span>You will be redirected to main page in seconds .</span>
-                            <% } %>
-
-</span>
+        There are no available subjects for you <br> <br> <span>You will be redirected to main page in seconds .</span>
+    <% } %>
+  </span>
                         <p id="spresult" class="spresult"></p>
                     </div>
 
@@ -100,11 +102,8 @@
     if(words.length == 0){
         setTimeout(function(){
             window.location = "/"
-        }, 8000);
+        }, 7000);
     }
-
-    // console.log(modulesCode);
-
     function findModuleCodeByName(moduleName) {
     const module = modulesCode.find(module => module.module_name.toLowerCase().trim() === moduleName.toLowerCase().trim());
         return module ? module.module_code : null;
