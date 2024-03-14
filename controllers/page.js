@@ -15,13 +15,22 @@ const Page = {
       if (!user) {
           return res.render("index", { isAuthenticated: false });
       }
-
       if (user.user_role === ROLES.Student) {
-          return res.render("comingsoon", {
+        const { testId } = req.params;
+        let tests = await dbFunctions.selectWithConditionIgnoreCase('tests', { "test_id" : testId}, 1);
+        let questions = await dbFunctions.selectWithConditionIgnoreCase('questions', { "test_id" : testId}, 1);
+        let modules = await dbFunctions.selectWithConditionIgnoreCase('modules', { "module_id" : tests[0].module_id}, 1);
+
+
+        console.log(questions);
+
+          return res.render("student/test", {
               user: user,
+              questions : questions ? questions : [],
+              test_name : tests ? tests[0].test_name : "",
+              module_name : modules ? modules[0].module_name : "",
           });
       }
-
       res.redirect("/")
   })(req, res, next);
   },
