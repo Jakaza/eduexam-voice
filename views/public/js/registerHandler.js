@@ -35,19 +35,18 @@ document.getElementById('register-form').addEventListener('submit', function (ev
         body: JSON.stringify(postData),
     })
         .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
             return response.json();
         })
         .then(data => {
             if (data.status === true) {
 
-                swal("Account has been successfully created", "Click ok to login", "success")
-                .then((value) => {
-                    window.location.href = `/`;
-                  });
-
+                if(data.emailStatus){
+                    swal(`Account has been successfully created, check your email ${additionalData.user_role.toLowerCase()} number`, "Click ok to login", "success")                .then((value) => {
+                        window.location.href = `/`;
+                      });
+                }else{
+                    swal(`Something went wrong, use correct email`, "Click ok and try again", "error")
+                }
               } else {
 registerBtn.disabled = false;
     registerBtn.value = 'Create Account';
