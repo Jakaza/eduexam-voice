@@ -7,9 +7,10 @@ var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
 var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent;
 var testhead = document.getElementById("testHead").textContent;
 var testThis = new SpeechSynthesisUtterance(testhead);
+
 syn.speak(testThis);
 testThis.onend = function(event) {
-    //console.log('Test head over. speak time:' + event.elapsedTime + ' milliseconds.');
+    console.log('Test head over. speak time:' + event.elapsedTime + ' milliseconds.');
     instruct();
 }
 
@@ -28,6 +29,8 @@ var phrases = "instructions | instruction";
 var resultPara = document.querySelector('.spresult');
 var resultPara7 = document.querySelector('.spresult7');
 var resultPara8 = document.querySelector('.spresult8');
+
+testSpeech()
 
 function testSpeech() {
     var flag=0;
