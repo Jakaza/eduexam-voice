@@ -11,11 +11,12 @@
     <meta name="description" content="Online Exam">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <% var words = [], k = 0; %>
+    <% var words = [], test_id = [], k = 0; %>
 
     <% if (tests.length > 0) { %> 
         <% tests.forEach(test => { %>
             <% words[k] = test.test_name; %>
+            <% test_id[k] = test; %>
             <% console.log('Words:' + words); %>
             <% k++; %>
         <% }); %>
@@ -62,6 +63,13 @@
 
 
                         <p id="spresult" class="spresult"></p>
+
+
+                        <span class="modules-hiden" style="display: none;">
+                            <% for (let i = 0; i < test_id.length; i++) { %>
+                                <span class="test-id-ob"><%= JSON.stringify(test_id[i]) %></span><br>
+                            <% } %>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -73,19 +81,37 @@
     <script type="text/javascript">
 
     var wordElement = document.querySelectorAll('.tests'); // Replace with the actual ID or class of the span
+    var testIdElement = document.querySelectorAll('.test-id-ob');
     console.log(wordElement);
-    var words = []
+    var words = [];
+    var testId = [];
 
     wordElement.forEach(word => {
         console.log(word.textContent.slice(0, -1));
         words.push(word.textContent.slice(0, -1))
     });
 
-    if(words.length == 0){
+    testIdElement.forEach(test => {
+        // console.log(JSON.parse(word.textContent));
+        testId.push(JSON.parse(test.textContent))
+    });
+
+
+    if(words.length == 0 && testId.length == 0){
         setTimeout(function(){
             window.location = "/"
         }, 8000);
     }
+
+    console.log(words);
+
+    function findTestByName(testName) {
+    const test = testId.find(test => test.test_name.toLowerCase().trim() === testName.toLowerCase().trim());
+        return test ? test.test_id : null;
+    }
+
+    console.log("findTestByName(testName) :", findTestByName("CLASS TEST ONE"));
+    // console.log("words :", words);
 
     var syn = window.speechSynthesis;
     var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
@@ -129,7 +155,7 @@
                     syn.speak(testThis);
                     console.log(testThis);
                     testThis.onend = function(event) {
-                        window.location = "/tests/210";
+                        window.location = `/tests/${findTestByName(speechResult)}`;
                     }
                     break;
                 } else if (speechResult === "repeat") {
