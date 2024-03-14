@@ -30,7 +30,6 @@ var resultPara = document.querySelector('.spresult');
 var resultPara7 = document.querySelector('.spresult7');
 var resultPara8 = document.querySelector('.spresult8');
 
-testSpeech()
 
 function testSpeech() {
     var flag=0;
