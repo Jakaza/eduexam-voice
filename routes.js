@@ -17,7 +17,7 @@ router.get("/register", Page.register);
 // User
 router.get("/modules", Page.viewModules);
 router.get("/modules/:moduleName", Page.viewModule);
-router.get("/tests/:testName", Page.viewModuleTest);
+router.get("/tests/:testId", Page.viewModuleTest);
 
 // Lecturer
 router.get("/test/view/:module_id",isUserLoggedIn, Page.viewTest);
