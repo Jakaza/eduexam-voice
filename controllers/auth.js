@@ -18,7 +18,7 @@ const Auth = {
       }
   
       // Check if the email is already taken
-      const userExist = await dbFunctions.selectByEmail('users', email);
+      let userExist = await dbFunctions.selectByEmail('users', email);
       if (userExist) {
         return res.status(STATUS_CODE.Bad_Request).json({ status: false, message: "Email is already taken" });
       }
@@ -28,8 +28,21 @@ const Auth = {
       const hashedPassword = bcrypt.hashSync(password_hash, salt);
   
       // Generate identification number
-      const identification_number = generateIdentificationNumber();
-  
+      let identification_number = generateIdentificationNumber();
+
+      
+      if (identification_number == userExist.userExist) {
+        identification_number = generateIdentificationNumber();
+      }
+
+      if (rsa_id == userExist.rsa_id) {
+        return res.status(STATUS_CODE.Bad_Request).json({ status: false, message: "RSA ID is already used" });
+      }
+
+      if (phone_number == userExist.phone_number) {
+        return res.status(STATUS_CODE.Bad_Request).json({ status: false, message: "Phone number is already taken" });
+      }
+
       // Create user object
       const newUser = {
         identification_number,
