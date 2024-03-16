@@ -48,10 +48,15 @@
                             <p id="login-error-msg" style="color: rgb(230, 98, 98);" >
                        
                             </p>
-                            <input type="text" class="form-control" placeholder="Enter Identification Number"
-                                name="identification_number"><br>
+                            <input type="text" class="form-control" placeholder="Enter Student Number"
+                                name="identification_number" id="identification_number_input"><br>
                             <input type="password" class="form-control" placeholder="Enter Password"
                                 name="password"><br>
+
+                                <select class="form-control" name="user_role" id="user_role_select">
+                                    <option value="STUDENT">Student</option>
+                                    <option value="LECTURER">Lecturer</option>
+                                </select>
 
                                 <br>
                             <input type="submit" class="form-control oq-btn" value="Login" id="login" name="login"><br><br>
@@ -62,6 +67,19 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.getElementById("user_role_select").addEventListener("change", function () {
+            var selectedRole = this.value;
+            var identificationNumberInput = document.getElementById("identification_number_input");
+    
+            if (selectedRole === "LECTURER") {
+                identificationNumberInput.setAttribute("placeholder", "Enter Lecturer Number");
+            } else {
+                identificationNumberInput.setAttribute("placeholder", "Enter Student Number");
+            }
+        });
+    </script>
 
     <script src="js/jquery-3.1.1.min.js"></script>
     <script src="js/bootstrap.js"></script>
