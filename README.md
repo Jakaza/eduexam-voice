@@ -1,4 +1,4 @@
-# Exam Voice-Based Web Application
+# Exam Voice-Based Web Application.
 
 ## Overview
 This readme file provides an overview of the Exam Voice-Based Web Application. The application is designed to facilitate exams using voice commands and offers different functionalities for students, lecturers, and administrators. This document will outline the features, user roles, and instructions on how to use the application.
