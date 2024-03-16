@@ -40,13 +40,9 @@ document.getElementById('register-form').addEventListener('submit', function (ev
         .then(data => {
             if (data.status === true) {
 
-                if(data.emailStatus){
-                    swal(`Account has been successfully created, check your email ${additionalData.user_role.toLowerCase()} number`, "Click ok to login", "success")                .then((value) => {
-                        window.location.href = `/`;
-                      });
-                }else{
-                    swal(`Something went wrong, use correct email`, "Click ok and try again", "error")
-                }
+                swal(`Account has been created, Check your email ${additionalData.user_role.toLowerCase()} number`, "Click ok to login", "success")                .then((value) => {
+                    window.location.href = `/`;
+                  });
               } else {
 registerBtn.disabled = false;
     registerBtn.value = 'Create Account';
