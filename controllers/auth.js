@@ -85,7 +85,7 @@ login: async (req, res) => {
       if (!isMatched || user_role !== userExist.user_role) {
           return res.status(STATUS_CODE.Bad_Request).json({
               status: false,
-              message: `Incorrect ${tooLowerCase(user_role)} or password... Enter correct credentials`,
+              message: `Incorrect ${tooLowerCase(user_role)} number or password... Enter correct credentials`,
           });
       }
       const payload = {
