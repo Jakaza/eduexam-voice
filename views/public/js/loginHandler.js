@@ -50,24 +50,26 @@ document.getElementById("login-form").addEventListener("submit", function (event
 function validateLoginForm() {
   const identification_number = document.querySelector('#login-form input[name="identification_number"]').value;
   const password = document.querySelector('#login-form input[name="password"]').value;
-
+  const user_role = document.getElementById("user_role_select")
+  var selectedRole = user_role.value;
   document.querySelectorAll(".oq-error").forEach((errorSpan) => {
     errorSpan.textContent = "";
   });
-
   let isValid = true;
-
   // Validate password length
   if (password.length < 6) {
-    document.querySelector("#passerror").textContent = "Password must be at least 6 characters long";
+    document.querySelector("#login-error-msg").textContent = "Password must be at least 6 characters long";
     isValid = false;
   }
-
   // Validate identification number format (8 digits starting with 22 and no letters)
   if (!/^(22\d{6})$/.test(identification_number) || /[a-zA-Z]/.test(identification_number)) {
-    document.querySelector("#iderror").textContent = "Identification number must be 8 digits contain no letters";
+    document.querySelector("#login-error-msg").textContent = `${tooLowerCase(selectedRole)} number must be 8 digits contain no letters`;
     isValid = false;
   }
-
   return isValid;
+}
+
+
+function tooLowerCase(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
