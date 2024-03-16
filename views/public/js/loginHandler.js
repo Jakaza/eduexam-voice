@@ -48,10 +48,8 @@ document.getElementById("login-form").addEventListener("submit", function (event
 
 
 function validateLoginForm() {
-  const email = document.querySelector('#login-form input[name="email"]').value;
-  const password = document.querySelector(
-    '#login-form input[name="password"]'
-  ).value;
+  const identification_number = document.querySelector('#login-form input[name="identification_number"]').value;
+  const password = document.querySelector('#login-form input[name="password"]').value;
 
   document.querySelectorAll(".oq-error").forEach((errorSpan) => {
     errorSpan.textContent = "";
@@ -59,14 +57,15 @@ function validateLoginForm() {
 
   let isValid = true;
 
-  if (!email.match(/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/)) {
-    document.querySelector("#phoneerror").textContent = "Invalid email address";
+  // Validate password length
+  if (password.length < 6) {
+    document.querySelector("#passerror").textContent = "Password must be at least 6 characters long";
     isValid = false;
   }
 
-  if (password.length < 5) {
-    document.querySelector("#passerror").textContent =
-      "Password must be at least 6 characters long";
+  // Validate identification number format (8 digits starting with 22 and no letters)
+  if (!/^(22\d{6})$/.test(identification_number) || /[a-zA-Z]/.test(identification_number)) {
+    document.querySelector("#iderror").textContent = "Identification number must be 8 digits contain no letters";
     isValid = false;
   }
 
