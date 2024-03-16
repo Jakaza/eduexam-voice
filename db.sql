@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
+    identification_number VARCHAR(8) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     rsa_id VARCHAR(13) NOT NULL,
     user_role VARCHAR(20) NOT NULL,
@@ -41,7 +42,7 @@ CREATE TABLE IF NOT EXISTS tests (
 
 CREATE TABLE IF NOT EXISTS questions (
     question_id SERIAL PRIMARY KEY,
-    question_text VARCHAR(100) NOT NULL,
+    question_text TEXT NOT NULL,
     test_id INT REFERENCES tests(test_id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
