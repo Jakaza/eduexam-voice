@@ -39,7 +39,6 @@ document.getElementById('register-form').addEventListener('submit', function (ev
         })
         .then(data => {
             if (data.status === true) {
-
                 swal(`Account has been created, Check your email ${additionalData.user_role.toLowerCase()} number`, "Click ok to login", "success")                .then((value) => {
                     window.location.href = `/`;
                   });
