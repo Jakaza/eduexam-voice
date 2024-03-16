@@ -72,17 +72,17 @@ login: async (req, res) => {
   console.log(req.body);
   const { identification_number, password , user_role } = req.body;
   try {
-      const userExist = await dbFunctions.selectWithCondition('users', {"identification_number": identification_number},1);
-
-
+      let userExist = await dbFunctions.selectWithCondition('users', {"identification_number": identification_number},1);
       if (!userExist) {
           return res.status(STATUS_CODE.Bad_Request).json({
               status: false,
               message: `Incorrect ${tooLowerCase(user_role)} number or password... Enter correct credentials`,
           });
       }
+      userExist = userExist[0];
+
       const isMatched = await bcrypt.compare(password, userExist.password_hash);
-      if (!isMatched) {
+      if (!isMatched || user_role !== userExist.user_role) {
           return res.status(STATUS_CODE.Bad_Request).json({
               status: false,
               message: `Incorrect ${tooLowerCase(user_role)} or password... Enter correct credentials`,
@@ -118,7 +118,7 @@ login: async (req, res) => {
   }
 },
 
-  logout: (req, res) => {
+logout: (req, res) => {
     res.clearCookie("token");
     console.log("Logging out the user");
     res.redirect("/");
