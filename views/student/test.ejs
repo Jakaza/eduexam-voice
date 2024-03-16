@@ -93,15 +93,8 @@
 
                                         <input type='hidden' value='<%= index %>' id='quesNo'>
 
-                                        <span class='oq-options'>
-                                            <input type='radio' name='qus"<%= index %>' value='A' id='temp"<%= index %>'> 1 <span id='oq-options<%= index %>'>Option </span></span><br><br>
-
-                                            <span class='oq-options'>
-                                                <input type='radio' name='qus"<%= index %>' value='B' id='temp"<%= index %>'> 2 <span id='oq-options<%= index %>'>Option </span></span><br><br>
-                                                
-                                                <span class='oq-options'>
-                                                    <input type='radio' name='qus"<%= index %>' value='C' id='temp"<%= index %>'> 3 <span id='oq-options<%= index %>'>Option </span></span><br><br>
-                                            <!-- <textarea class="form-control user_response" name="user_response" id="<%= question.question_id%>" cols="30" rows="5"></textarea> -->
+           
+                                        <textarea class="form-control user_response" name="user_response" id="<%= question.question_id%>" cols="30" rows="5"></textarea>
 
 
                                        <% })  %>
