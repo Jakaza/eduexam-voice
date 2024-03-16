@@ -7,88 +7,85 @@ const { STATUS_CODE, ROLES } = require("../constants/");
 const { sendMessage } = require("../utils/nodemailer");
 
 const Auth = {
-register: async (req, res) => {
-  console.log(req.body);
-  let { first_name, last_name, email, password_hash, rsa_id, user_role, phone_number, user_address, course_id } = req.body;
-  if (!first_name || !last_name || !email || !password_hash || !rsa_id || !user_role , !phone_number , !user_address || !course_id) {
-      return res
-          .status(STATUS_CODE.Bad_Request)
-          .json({ status: false, message: "Fill in all the required fields" });
-  }
-  try {
+
+  register: async (req, res) => {
+    try {
+      const { first_name, last_name, email, password_hash, rsa_id, user_role, phone_number, user_address, course_id } = req.body;
+  
+      // Check if all required fields are provided
+      if (!first_name || !last_name || !email || !password_hash || !rsa_id || !user_role || !phone_number || !user_address || !course_id) {
+        return res.status(STATUS_CODE.Bad_Request).json({ status: false, message: "Fill in all the required fields" });
+      }
+  
+      // Check if the email is already taken
       const userExist = await dbFunctions.selectByEmail('users', email);
       if (userExist) {
-          return res
-              .status(STATUS_CODE.Bad_Request)
-              .json({ status: false, message: "Email is already taken" });
+        return res.status(STATUS_CODE.Bad_Request).json({ status: false, message: "Email is already taken" });
       }
-
+  
+      // Hash the password
       const salt = bcrypt.genSaltSync(10);
-      password_hash = bcrypt.hashSync(password_hash, salt);
-
-      const identification_number = generateIdentificationNumber()
-
+      const hashedPassword = bcrypt.hashSync(password_hash, salt);
+  
+      // Generate identification number
+      const identification_number = generateIdentificationNumber();
+  
+      // Create user object
       const newUser = {
-          identification_number,
-          first_name,
-          last_name,
-          email,
-          password_hash,
-          rsa_id,
-          user_role,
-          phone_number,
-          user_address,
-          registration_date: new Date(),
-          course_id,
-          created_at: new Date(),
-      };
-    await dbFunctions.createData('users', newUser);
-
-     const emailStatus = await sendMessage(first_name, last_name, identification_number , email , user_role , 'Registration Confirmation')
-
-     if (emailStatus) {
-      console.log("Email sent successfully.");
-      res.status(201).json({ status: true, message: "Test created successfully.", emailStatus: true ,          
-       user: {
+        identification_number,
         first_name,
         last_name,
         email,
-    },});
-    } else {
-      console.log("Failed to send email.");
-      res.status(500).json({ status: false, message: "Failed to send email.", emailStatus: false });
+        password_hash: hashedPassword,
+        rsa_id,
+        user_role,
+        phone_number,
+        user_address,
+        registration_date: new Date(),
+        course_id,
+        created_at: new Date(),
+      };
+  
+      // Create user in the database
+      await dbFunctions.createData('users', newUser);
+  
+      // Send registration confirmation email asynchronously
+      sendMessage(first_name, last_name, identification_number, email, user_role, 'Registration Confirmation')
+        .then(emailStatus => {
+          console.log("Email sent successfully.");
+        })
+        .catch(error => {
+          console.error("Failed to send email:", error);
+        });
+  
+      // Respond to the client
+      res.status(201).json({ status: true, message: "User registered successfully.", user: { first_name, last_name, email } });
+  
+    } catch (error) {
+      console.error("Registration failed:", error);
+      res.status(STATUS_CODE.Internal).json({ status: false, message: "Something went wrong, try again...", error });
     }
-
-  } catch (error) {
-      console.error(error);
-      res.status(STATUS_CODE.Internal).json({
-          status: false,
-          message: "Something went wrong, try again...",
-          error,
-      });
-  }
-},
-
+  },
+  
 
 login: async (req, res) => {
   console.log(req.body);
-  const { identification_number, password } = req.body;
+  const { identification_number, password , user_role } = req.body;
   try {
       const userExist = await dbFunctions.selectWithCondition('users', {"identification_number": identification_number},1);
 
-      console.log(userExist);
 
       if (!userExist) {
           return res.status(STATUS_CODE.Bad_Request).json({
               status: false,
-              message: "Incorrect identification number or password... Enter correct credentials",
+              message: `Incorrect ${tooLowerCase(user_role)} number or password... Enter correct credentials`,
           });
       }
       const isMatched = await bcrypt.compare(password, userExist.password_hash);
       if (!isMatched) {
           return res.status(STATUS_CODE.Bad_Request).json({
               status: false,
-              message: "Incorrect email or password... Enter correct credentials",
+              message: `Incorrect ${tooLowerCase(user_role)} or password... Enter correct credentials`,
           });
       }
       const payload = {
@@ -239,6 +236,11 @@ function generateResetToken() {
     const studentNumber = `22${randomNumber}`;
   
     return studentNumber;
+  }
+
+
+  function tooLowerCase(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   }
 
 module.exports = Auth;
