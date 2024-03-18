@@ -78,26 +78,24 @@
                                         <input type='hidden' id='rowscount' name='totalQus' value='<%=questions.length%>'>
                                         <p id='spresult2' class='spresult2'></p>
 
-                                        <script>
-                                            var count = document.getElementById("rowscount").value;
-                                            console.log(count);
-                                        </script>
+                                        <div id="questionsContainer">
+                                            <%  questions.forEach((question, index) => {   %>
+                                                <div class="question">
+                                                    <button class='oq-aLeft oq-questions oq-form-control' disabled>
+                                                        Question <%= (index + 1) %>: <%= question.question_text  %>
+                                                    </button>
+                                                    
+                                                    <input type='hidden' name='question_id<%=index %>' value='<%=question.question_id%>'>
+                                                    <input type='hidden' name='test_id<%=index %>' value='<%=question.question_id%>'>
+                                                    <br>
 
-                                        <%  questions.forEach((question, index) => {   %>
-                                            <div id='ques".$i."'>
-                                                <%  if(question.guidelines) { %>  
-                                                    <span><%=question.guidelines%></span><br><br>
-                                                <% } %>
-
-                                        <button class='oq-aLeft oq-questions oq-form-control' disabled>Question <%=(index+1)%>) <%=question.question_text%></button><br>
-
-                                        <input type='hidden' value='<%= index %>' id='quesNo'>
-
-           
-                                        <textarea class="form-control user_response" name="user_response" id="<%= question.question_id%>" cols="30" rows="5"></textarea>
+                                                    <textarea class="form-control user_response" name="user_response" id='<%=question.question_id%>' cols="30" rows="5"></textarea> 
+                    <br><br>
+                                                </div>
+                                           <% })  %>
+                                        </div>
 
 
-                                       <% })  %>
 
                                        <br><br>
                                        <input type='submit' class='oq-btn' name='submit' id='oqsubmit' value='submit test'>
