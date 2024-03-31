@@ -4,6 +4,7 @@ const {
   updateData,
   selectWithConditionIgnoreCase,
 } = require("../config/dbFunctions");
+const { ROLES } = require("../constants/");
 
 const Module = {
   create: async (req, res, next) => {
@@ -76,7 +77,7 @@ const Module = {
       );
       const users = await selectWithConditionIgnoreCase(
         "users",
-        { course_id: modules[0].course_id },
+        { course_id: modules[0].course_id, user_role: ROLES.Student },
         1
       );
 
