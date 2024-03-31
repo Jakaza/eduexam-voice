@@ -2,18 +2,22 @@ const {
   createData,
   deleteData,
   updateData,
-  updateWithCondition
-} = require('../config/dbFunctions');
+  updateWithCondition,
+} = require("../config/dbFunctions");
 
 const Test = {
   create: async (req, res, next) => {
     try {
       const { test_name, module_id } = req.body;
-      await createData('tests', { test_name, module_id });
-      res.status(201).json({ status: true, message: 'Test created successfully.' });
+      await createData("tests", { test_name, module_id });
+      res
+        .status(201)
+        .json({ status: true, message: "Test created successfully." });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ status: false, message: 'Internal server error.' });
+      res
+        .status(500)
+        .json({ status: false, message: "Internal server error." });
     }
   },
 
@@ -24,7 +28,7 @@ const Test = {
       await updateWithCondition(
         "tests",
         {
-          test_name: test_name
+          test_name: test_name,
         },
         { test_id: testID }
       );
@@ -34,17 +38,19 @@ const Test = {
       res.redirect(`/test/view/${moduleID}`);
     }
   },
-  
+
   delete: async (req, res, next) => {
     try {
-      const { testID } = req.params;
-      await deleteData('tests', 'test_id', testID);
-      res.status(200).json({ status: true, message: 'Test deleted successfully.' });
+      const { testId, moduleId } = req.params;
+      await deleteData("tests", "test_id", testId);
+      res.redirect(`/test/view/${moduleId}`);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ status: false, message: 'Internal server error.' });
+      res
+        .status(500)
+        .json({ status: false, message: "Internal server error." });
     }
-  }
+  },
 };
 
 module.exports = Test;

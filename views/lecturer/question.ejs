@@ -52,19 +52,11 @@
                                                 ?> -->
                 <div class="row">
                   <div class="col-md-6">
-                    <span class="oq-testsHeadText" >
-                     <%= test.test_name%>
-                      
-                      </span
-                    >
+                    <span class="oq-testsHeadText"> <%= test.test_name%> </span>
                   </div>
                   <div class="col-md-3">
                     <div class="text-center">
-
-
-                         <!-- <a href="savetest.php?test=<?php echo $test;?>" class="oq-btn">View the quiz</a> -->
-
-
+                      <!-- <a href="savetest.php?test=<?php echo $test;?>" class="oq-btn">View the quiz</a> -->
                     </div>
                   </div>
                   <div class="col-md-3">
@@ -100,6 +92,13 @@
                         >
                           <br />
                           <span>Question</span><br /><br />
+
+                          <span
+                            id="question-create-error"
+                            style="color: rgb(198, 79, 79)"
+                          >
+                          </span>
+                          <br /><br />
                           <textarea
                             class="form-control"
                             placeholder="Enter the question"
@@ -191,6 +190,7 @@
                               <textarea
                                 class="form-control"
                                 name="question_text"
+                                minlength="10"
                               >
 <%= question.question_text %></textarea
                               >

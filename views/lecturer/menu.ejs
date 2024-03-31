@@ -3,7 +3,6 @@
   <head>
     <title>Welcome to edu exam</title>
 
-
     <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
     <link rel="stylesheet" type="text/css" href="css/main.css" />
     <link rel="stylesheet" type="text/css" href="css/font/flaticon.css" />
@@ -128,8 +127,13 @@
                                                 }
                                             ?> -->
                 <form class="form" id="create-module" method="post">
-                  <span class="oq-modalLangHead">Create new module</span> <br>
-                  <span id="module-create-error" style="color: rgb(198, 79, 79);"></span><br /><br />
+                  <span class="oq-modalLangHead">Create new module</span> <br />
+                  <span
+                    id="module-create-error"
+                    style="color: rgb(198, 79, 79)"
+                  >
+                  </span
+                  ><br /><br />
                   <div class="col-md-2" id="module-error"></div>
                   <div class="col-md-4">
                     <input
@@ -137,6 +141,7 @@
                       class="form-control"
                       placeholder="Enter the module name"
                       name="module_name"
+                      id="module_name"
                       required
                     />
                     <br />
@@ -145,6 +150,7 @@
                       class="form-control"
                       placeholder="Enter the module code"
                       name="module_code"
+                      id="module_code"
                       required
                     />
                     <input
@@ -240,6 +246,7 @@
       </div>
     </div>
 
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script src="js/jquery-3.1.1.min.js"></script>
     <script src="js/bootstrap.js"></script>
 
@@ -255,7 +262,12 @@
 
           const jsonFormData = {};
           formData.forEach((value, key) => {
-            jsonFormData[key] = value;
+            if (value.trim().length <= 0 || value.trim() == "") {
+              errorMessage("Please enter valid module name/code");
+              return;
+            }
+
+            jsonFormData[key] = value.trim();
           });
 
           const createBtn = document.getElementById("oq-createbtn");
@@ -281,21 +293,38 @@
                 window.location.href = `/`;
               } else {
                 console.log(data);
-                enableBtn()
+                enableBtn();
               }
             })
             .catch((error) => {
-              enableBtn()
+              enableBtn();
               console.error(`Error: ${error}`);
             });
         });
 
+      function errorMessage(message) {
+        document.getElementById(
+          "module-create-error"
+        ).textContent = `${message}`;
+        enableBtn();
+      }
 
-        function enableBtn(){
-          const createBtn = document.getElementById("oq-createbtn");
-          createBtn.disabled = false;
-          createBtn.value = "Create";
-        }
+      function enableBtn() {
+        const createBtn = document.getElementById("oq-createbtn");
+        createBtn.disabled = false;
+        createBtn.value = "Create";
+      }
+
+      function closeModel() {
+        const clickEvent = new MouseEvent("click", {
+          view: window,
+          bubbles: true,
+          cancelable: true,
+          clientX: window.innerWidth,
+          clientY: window.innerHeight,
+        });
+        document.dispatchEvent(clickEvent);
+      }
 
       // DELETE MODULE
 
@@ -313,28 +342,27 @@
           // Show loading indicator
           deleteBtn.disabled = true;
           deleteBtn.value = "Deleting Module...";
-          fetch(
-            `/module/delete/${moduleId}`,
-            {
-              method: "DELETE",
-            }
-          )
+          fetch(`/module/delete/${moduleId}`, {
+            method: "DELETE",
+          })
             .then((response) => {
-              if (!response.ok) {
-                          // Show loading indicator
-          deleteBtn.disabled = false;
-          deleteBtn.value = "Deleting Module";
-                throw new Error("Network response was not ok");
-              }
               return response.json();
             })
             .then((data) => {
-              console.log("Module deleted successfully:", data);
-              window.location.href = `/`;
+              if (data.status) {
+                console.log("Module deleted successfully:", data);
+                window.location.href = `/`;
+              } else {
+                deleteBtn.disabled = false;
+                deleteBtn.value = "Delete Module";
+                $(".delete-sub").modal("hide");
+                swal(`${data.message}`, "Contact System Administrator");
+                console.log(data.message);
+              }
             })
             .catch((error) => {
               deleteBtn.disabled = false;
-          deleteBtn.value = "Deleting Module";
+              deleteBtn.value = "Deleting Module";
               document.getElementById("module-delete-error").textContent =
                 "There was a problem with the delete module operation";
 
