@@ -20,7 +20,7 @@ router.get("/modules/:moduleName", Page.viewModule);
 router.get("/tests/:testId", Page.viewModuleTest);
 
 // Lecturer
-router.get("/test/view/:module_id",isUserLoggedIn, Page.viewTest);
+router.get("/test/view/:module_id", isUserLoggedIn, Page.viewTest);
 router.get("/question/view", Page.viewQuestion);
 
 // AUTH
@@ -34,7 +34,7 @@ router.delete("/module/delete/:moduleID", Module.delete);
 
 // TEST
 router.post("/test/create", Test.create);
-router.delete("/test/delete/:testID", Test.delete);
+router.get("/test/delete/:testId/:moduleId", Test.delete);
 router.post("/test/update/:testID/:moduleID", Test.update);
 
 // QUESTION
