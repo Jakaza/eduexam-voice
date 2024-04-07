@@ -1,15 +1,14 @@
-
-
 const nodemailer = require("nodemailer");
 const emailTemplateRegistration = require("./emailTemplate");
 
-async function sendMessage(     
+async function sendMessage(
   first_name,
   last_name,
   identification_number,
   email,
   user_role,
-  subject,) {
+  subject
+) {
   try {
     // create reusable transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({
@@ -26,7 +25,7 @@ async function sendMessage(
     let info = await transporter.sendMail({
       sender: `${email}`,
       from: `${email}`, // sender address
-      to: "goodnessjakazac@gmail.com",
+      to: process.env.APP_USER,
       replyTo: `${email}`,
       subject: `${subject}`, // Subject line
     });
@@ -34,12 +33,17 @@ async function sendMessage(
     // Generate and send confirmation email with student number
 
     info = await transporter.sendMail({
-      sender: "goodnessjakazac@gmail.com",
-      from: "goodnessjakazac@gmail.com", // sender address
+      sender: process.env.APP_USER,
+      from: process.env.APP_USER, // sender address
       to: `${email}`,
-      replyTo: 'goodnessjakazac@gmail.com',
+      replyTo: process.env.APP_USER,
       subject: `${subject}`, // Subject line
-      html: `${emailTemplateRegistration( first_name , last_name ,identification_number , user_role )}`, // html body
+      html: `${emailTemplateRegistration(
+        first_name,
+        last_name,
+        identification_number,
+        user_role
+      )}`, // html body
     });
 
     return true; // Return true if email was sent successfully
