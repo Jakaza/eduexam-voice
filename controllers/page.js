@@ -197,9 +197,7 @@ const Page = {
         }
 
         if (user.user_role === ROLES.Admin) {
-          return res.render("admin/main", {
-            user: user,
-          });
+          return res.render("admin/menu");
         } else if (user.user_role === ROLES.Lecturer) {
           try {
             const pageNumber = 1;

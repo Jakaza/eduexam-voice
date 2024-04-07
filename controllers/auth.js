@@ -113,14 +113,24 @@ const Auth = {
   },
 
   login: async (req, res) => {
-    console.log(req.body);
     const { identification_number, password, user_role } = req.body;
     try {
-      let userExist = await dbFunctions.selectWithCondition(
-        "users",
-        { identification_number: identification_number },
-        1
-      );
+      let userExist = "";
+
+      if (!identification_number) {
+        userExist = await dbFunctions.selectWithCondition(
+          "users",
+          { email: process.env.ADMIN_EMAIL },
+          1
+        );
+      } else {
+        userExist = await dbFunctions.selectWithCondition(
+          "users",
+          { identification_number: identification_number },
+          1
+        );
+      }
+
       if (!userExist) {
         return res.status(STATUS_CODE.Bad_Request).json({
           status: false,
