@@ -1,10 +1,46 @@
 const { Pool } = require("pg");
+const bcrypt = require("bcrypt");
 
 const pool = new Pool({
   connectionString: process.env.PG_URL,
 });
 
 module.exports = pool;
+
+async function seed() {
+  try {
+    const client = await pool.connect();
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(process.env.ADMIN_PASSWORD, salt);
+    const admin = {
+      first_name: "admin",
+      last_name: "admin",
+      email: process.env.ADMIN_EMAIL,
+      password_hash: hashedPassword,
+      rsa_id: "9510156122087",
+      user_role: "ADMIN",
+      phone_number: "0711770423",
+      user_address: "eduvoiceexam",
+      course_id: 5,
+      identification_number: "00000000",
+      registration_date: new Date(),
+      created_at: new Date(),
+    };
+
+    let userExist = await selectByEmail("users", process.env.ADMIN_EMAIL);
+
+    if (!userExist) {
+      console.log("Creating new admin");
+      await createData("users", admin);
+    }
+    console.log("Admin already exist.");
+    client.release();
+  } catch (error) {
+    console.error("Error connecting to database:", error.message);
+  }
+}
+
+seed();
 
 const selectDataWithPagination = async (tableName, pageNumber) => {
   const pageSize = 20;
@@ -122,7 +158,11 @@ const updateWithCondition = async (tableName, updateFields, conditions) => {
   await pool.query(query, values);
 };
 
-const selectWithConditionIgnoreCase = async (tableName, conditions, pageNumber) => {
+const selectWithConditionIgnoreCase = async (
+  tableName,
+  conditions,
+  pageNumber
+) => {
   const pageSize = 20;
   const offset = (pageNumber - 1) * pageSize;
 
@@ -158,5 +198,5 @@ module.exports = {
   selectWithCondition,
   selectDataWithPagination,
   updateWithCondition,
-  selectWithConditionIgnoreCase
+  selectWithConditionIgnoreCase,
 };
