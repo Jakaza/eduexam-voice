@@ -171,33 +171,31 @@ const SuperAdmin = {
       }
     )(req, res, next);
   },
-
-  //   passport.authenticate(
-  //     "jwt",
-  //     { session: false },
-  //     async (err, user, info) => {
-  //       if (err) {
-  //         return res.status(500).render("error/server");
-  //       }
-  //       if (!user) {
-  //         return res.render("index", { isAuthenticated: false });
-  //       }
-  //       if (user.user_role === ROLES.Admin) {
-  //         let users = await dbFunctions.selectWithConditionIgnoreCase(
-  //           "users",
-  //           { user_role: ROLES.Lecturer },
-  //           1
-  //         );
-  //         console.log(lecturers);
-  //         return res.render("admin/lecturers", {
-  //           user: user,
-  //           lecturers: lecturers ? lecturers : [],
-  //         });
-  //       }
-  //       res.redirect("/");
-  //     }
-  //   )(req, res, next);
-  // },
+  deleteUser: async (req, res, next) => {
+    passport.authenticate(
+      "jwt",
+      { session: false },
+      async (err, user, info) => {
+        if (err) {
+          return res.status(500).render("error/server");
+        }
+        if (!user) {
+          return res.render("index", { isAuthenticated: false });
+        }
+        if (user.user_role === ROLES.Admin) {
+          const { user_id, user_role } = req.body;
+          await dbFunctions.deleteData("users", "user_id", user_id);
+          console.log("Student has been deleted.");
+          res.render("admin/success_del", {
+            message: "User deleted successfully",
+            user_role: user_role.toLowerCase(),
+          });
+        } else {
+          res.redirect("/");
+        }
+      }
+    )(req, res, next);
+  },
   updateUser: async (req, res) => {
     try {
       const userId = req.params.userId;

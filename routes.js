@@ -18,6 +18,7 @@ router.get("/students", SuperAdmin.viewStudents);
 router.get("/lecturers", SuperAdmin.viewLecturers);
 router.get("/user/edit/:userId", SuperAdmin.viewEditUser);
 router.post("/user/edit", SuperAdmin.editUser);
+router.post("/user/delete", SuperAdmin.deleteUser);
 
 // User
 router.get("/modules", Page.viewModules);

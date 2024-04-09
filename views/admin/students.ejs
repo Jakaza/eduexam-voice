@@ -107,6 +107,24 @@
                         Student
                       </a>
                       <br /><br />
+
+                      <form action="/user/delete" method="post">
+                        <input
+                          type="hidden"
+                          name="user_id"
+                          value="<%= student.user_id %>"
+                        />
+                        <input type="hidden" name="user_role" value="student" />
+                        <input
+                          style="outline: none; border: none"
+                          type="submit"
+                          id="edit-user-btn"
+                          class="oq-deletebtn"
+                          value="Delete Student"
+                          name="update"
+                        /><br /><br />
+                      </form>
+
                       <!-- <a
                         href="/user/delete/<%= student.user_id %>"
                         class="oq-deletebtn"

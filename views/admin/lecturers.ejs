@@ -105,13 +105,26 @@
                         Lecturer
                       </a>
                       <br /><br />
-                      <!-- <a
-                        href="/user/delete/<%= lecturer.user_id %>"
-                        class="oq-deletebtn"
-                      >
-                        <span class="glyphicon glyphicon-remove"></span>
-                        Delete</a
-                      > -->
+                      <form action="/user/delete" method="post">
+                        <input
+                          type="hidden"
+                          name="user_id"
+                          value="<%= lecturer.user_id %>"
+                        />
+                        <input
+                          type="hidden"
+                          name="user_role"
+                          value="lecturer"
+                        />
+                        <input
+                          style="outline: none; border: none"
+                          type="submit"
+                          id="edit-user-btn"
+                          class="oq-deletebtn"
+                          value="Delete Student"
+                          name="update"
+                        /><br /><br />
+                      </form>
                     </td>
                   </tr>
                   <% }); %> <% } else { %>
