@@ -6,6 +6,7 @@ const isUserLoggedIn = require("./utils/checkLogin");
 const Module = require("./controllers/module");
 const Test = require("./controllers/test");
 const Question = require("./controllers/question");
+const SuperAdmin = require("./controllers/admin");
 
 // rendering pages - ejs
 router.get("/", isUserLoggedIn, Page.homePage);
@@ -13,6 +14,10 @@ router.get("/login", Page.login);
 router.get("/register", Page.register);
 
 // Admin
+router.get("/students", SuperAdmin.viewStudents);
+router.get("/lecturers", SuperAdmin.viewLecturers);
+router.get("/user/edit/:userId", SuperAdmin.viewEditUser);
+router.post("/user/edit", SuperAdmin.editUser);
 
 // User
 router.get("/modules", Page.viewModules);
