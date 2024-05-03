@@ -146,7 +146,7 @@
             console.log("words:" + words);
             for (var i = 0; i < words.length; i++) {
                 console.log("words[i] : ", words[i]);
-                if (speechResult.toLowerCase() === words[i].toLowerCase()) {
+                if (speechResult.toLowerCase() === words[i].toLowerCase() || speechResult.toLowerCase() === `${words[i].toLowerCase()}.`) {
                     flag = 1;
                     console.log("speech result: " + speechResult);
                     resultPara.textContent = 'Speech received: ' + speechResult + '.';

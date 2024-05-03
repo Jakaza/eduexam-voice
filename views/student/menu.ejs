@@ -83,8 +83,13 @@
         recognition.start();
         recognition.onresult = function(event) {
             var speechResult = event.results[0][0].transcript;
+            speechResult = speechResult.toLowerCase();
+
+            console.log("speechResult", speechResult);
+
             if (speechResult == 'list the subjects' || speechResult == 'list the subject' || speechResult ==
-                'subject' || speechResult == 'subjects') {
+                'subject' || speechResult == 'subjects' || speechResult == 'list the subjects.' || speechResult == 'list the subject.' || speechResult ==
+                'subject.' || speechResult == 'subjects.') {
                 flag = 1;
                 console.log("speech result: " + speechResult);
                 resultPara.textContent = 'Speech received: ' + speechResult + '.';
