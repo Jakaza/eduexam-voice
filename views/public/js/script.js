@@ -14,7 +14,8 @@ testThis.onend = function (event) {
   console.log(
     "Test head over. speak time:" + event.elapsedTime + " milliseconds."
   );
-  instruct();
+  readFirstQuestion();
+  // instruct();
 };
 
 function instruct() {
@@ -48,7 +49,8 @@ function testSpeech() {
   recognition.start();
   recognition.onresult = function (event) {
     var speechResult = event.results[0][0].transcript;
-    if (speechResult == "instructions" || speechResult == "instruction") {
+    speechResult = speechResult.replace(/\.$/, '');
+    if (speechResult.toLowerCase() == "instructions" || speechResult.toLowerCase() == "instruction") {
       flag = 1;
       console.log("speech result: " + speechResult);
       resultPara.textContent = "Speech received: " + speechResult + ".";
@@ -139,12 +141,11 @@ function speech(testValue) {
   recognition.lang = "en-US";
   recognition.interimResults = false;
   recognition.maxAlternatives = 1;
-
   recognition.start();
-
   recognition.onresult = function (event) {
     var speechResult = event.results[0][0].transcript;
-    if (speechResult === testValue) {
+    speechResult = speechResult.replace(/\.$/, '');
+    if (speechResult.toLowerCase() === testValue || speechResult.toLowerCase() === "begin") {
       flag = 1;
       resultPara1.textContent = "Speech received: " + speechResult + ".";
       var syn = window.speechSynthesis;
@@ -155,6 +156,8 @@ function speech(testValue) {
         console.log("speak time:" + event.elapsedTime + " milliseconds.");
         timer();
         readTimerQuestion();
+        //:TODO Read The First Question Here
+        
       };
     } else {
       flag = 2;
@@ -174,7 +177,9 @@ function speech(testValue) {
   };
 
   recognition.onend = function () {
-    console.log("onend");
+    
+    console.log("Now it is repeating instructions if i don't say anything.....");
+
     if (flag == 1 || flag == 2) {
       console.log("onend if");
       recognition.stop();
@@ -197,9 +202,7 @@ function speech(testValue) {
     }
   };
 }
-
 //timer and exam
-
 function timer() {
   var expDate = new Date().getTime();
   var countDownDate = expDate + 2401100;
@@ -216,9 +219,6 @@ function timer() {
     }
   }, 1000);
 }
-
-var qNo = 1;
-
 function readTimerQuestion() {
   var speakTimer = document.getElementById("speakTimer").textContent;
   var timeThis = new SpeechSynthesisUtterance(speakTimer);
@@ -231,334 +231,543 @@ function readTimerQuestion() {
     speechQuestion(qNo, 0);
   };
 }
-function readQuestion(qNo) {
-  var ques = document.getElementById("ques" + qNo).textContent;
-  var quesThis = new SpeechSynthesisUtterance(ques);
-  syn.speak(quesThis);
-  quesThis.onend = function (event) {
-    console.log("speak time:" + event.elapsedTime + " milliseconds.");
-    speechQuestion(qNo, 0);
+
+
+// SECTION FOR ANSWERING QUESTIONS
+const questionElements = questionsContainer.querySelectorAll('.question');
+function extractQuestionsFromHTML() {
+    const extractedQuestions = [];
+    const questionsContainer = document.getElementById('questionsContainer');    
+    questionElements.forEach((questionElement, index) => {
+        const questionText = questionElement.querySelector('button').textContent.trim();
+        const questionId = questionElement.querySelector('input[name^="question_id"]').value;
+        const testId = questionElement.querySelector('input[name^="test_id"]').value;
+        const answer = "";
+        const question = {
+            question_id: questionId,
+            test_id: testId,
+            question_text: questionText,
+            answer: answer 
+        };
+        extractedQuestions.push(question);
+    });
+    return extractedQuestions;
+}
+const extractedQuestions = extractQuestionsFromHTML();
+extractedQuestions.forEach((question, index) => {
+    console.log(`${question.question_text}`);
+    console.log(`Question ID: ${question.question_id}`);
+    console.log(`Test ID: ${question.test_id}`);
+});
+const userResponse = [];
+
+const answerRecognition = new SpeechRecognition();
+answerRecognition.continuous = true;
+var synth = window.speechSynthesis;
+// const speech = new SpeechSynthesisUtterance();
+let isRecordStopped = true;
+
+
+var questionNumber = 1;
+
+function readFirstQuestion() {
+  if (isRecordStopped === false) {
+    answerRecognition.stop();
+  }
+  var question1 = extractedQuestions[0].question_text;
+  var quesThis = new SpeechSynthesisUtterance(question1);
+  quesThis.onend = function () {
+    answerRecognition.start();
   };
+  synth.speak(quesThis);
 }
 
-var resultPara2 = document.querySelector(".spresult2");
-var navQus = 0;
-function speechQuestion(qNo, navQus) {
-  var flag = 0;
-  var l = 1;
-  var qwords = "";
-  var words =
-    "repeat question | repeat options | option 1 | option one | option b | option c | option d | option e | next question";
-  while (l <= count) {
-    qwords = qwords + "question " + l + " | question " + inWords(l) + " | ";
-    console.log("qwords : " + qwords);
-    l++;
-  }
-  qwords = qwords + words;
-  console.log("qwords " + qwords);
-  console.log("in testspeech");
-  var grammar = "#JSGF V1.0; grammar phrase; public <phrase> = " + qwords + ";";
-  console.log(SpeechRecognition);
-  var recognition = new SpeechRecognition();
-  var speechRecognitionList = new SpeechGrammarList();
-  speechRecognitionList.addFromString(grammar, 1);
-  recognition.grammars = speechRecognitionList;
-  recognition.lang = "en-US";
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
-  recognition.start();
-  console.log("qNo(speechQus:" + qNo);
-  recognition.onresult = function (event) {
-    var speechResult = event.results[0][0].transcript;
-    console.log("speechResult:" + speechResult);
-    var syn = window.speechSynthesis;
-    var ans;
-    var radios;
-    console.log("no " + qNo);
-    for (l = 1; l <= count; l++) {
-      var temper = "question " + l;
-      var temper1 = "question " + inWords(l);
-      console.log("temper:" + temper + " temper1:" + temper1);
-      if (speechResult == temper || speechResult == temper1) {
-        qNo = l;
-        flag = 1;
-        readQuestion(qNo);
-        break;
-      }
-    }
-    if (l > count) {
-      if (speechResult == "repeat question") {
-        flag = 1;
-        speakQuestion(speechResult);
-        readQuestion(qNo);
-      } else if (speechResult == "option 1" || speechResult == "option one") {
-        flag = 1;
-        option(qNo, 0, speechResult);
-      } else if (
-        speechResult == "option 2" ||
-        speechResult == "option two" ||
-        speechResult == "option to"
-      ) {
-        flag = 1;
-        option(qNo, 1, speechResult);
-      } else if (speechResult == "option 3" || speechResult == "option three") {
-        flag = 1;
-        option(qNo, 2, speechResult);
-      } else if (
-        speechResult == "option 4" ||
-        speechResult == "option four" ||
-        speechResult == "option for"
-      ) {
-        flag = 1;
-        option(qNo, 3, speechResult);
-      } else if (speechResult == "option 5" || speechResult == "option five") {
-        flag = 1;
-        option(qNo, 4, speechResult);
-      } else if (speechResult == "next question") {
-        flag = 1;
-        qNo++;
-        readQuestion(qNo);
-      } else if (speechResult == "previous question") {
-        flag = 1;
-        qNo--;
-        readQuestion(qNo);
-      } else if (speechResult == "submit" || speechResult == "submit test") {
-        flag = 1;
-        document.getElementById("oqsubmit").click();
-      } else {
-        if (navQus == 0) {
-          flag = 2;
-          console.log("ques if");
-          resultPara2.textContent =
-            "Speech received: " + speechResult + ". No such operation.";
-          var testhead = document.getElementById("spresult2").textContent;
-          var navQustion = new SpeechSynthesisUtterance(testhead);
-          syn.speak(navQustion);
-          navQustion.onend = function (event) {
-            readQuestion(qNo);
-          };
-        } else {
-          flag = 4;
-          console.log("ques else");
-          if (navQus == 1) {
-            var navQustions = new SpeechSynthesisUtterance(
-              "For next question say next question"
-            );
-          } else if (navQus == 2) {
-            var navQustions = new SpeechSynthesisUtterance(
-              "This is your final question. For previous question say previous question or to submit the test say submit"
-            );
-          } else if (navQus == 3) {
-            var navQustions = new SpeechSynthesisUtterance(
-              "For next question say next question and for previous question say previous question"
-            );
+answerRecognition.onstart = function () {
+  console.log("Start Recording");
+};
+
+let questionChanged = false;
+
+answerRecognition.onresult = function (event) {
+  let current = event.resultIndex;
+  let transcript = event.results[current][0].transcript;
+  transcript = transcript.toLowerCase();
+
+  if (transcript.includes("next question")) {
+      saveToLocalStorage(questionNumber);
+      console.log(userResponse);
+      isRecordStopped = true;
+      questionChanged = false;
+      questionNumber++;
+      readQuestion(questionNumber)
+      console.log("Read Next Question");
+  }else if (transcript.includes("previous question")) {
+      saveToLocalStorage(questionNumber);
+      console.log(userResponse);
+      questionNumber--;
+      isRecordStopped = true;
+      questionChanged = true;
+      readQuestion(questionNumber)
+      
+
+      console.log("Read Previous Question");
+  }else if (transcript.includes("submit test") || transcript.includes("submit")) {
+      isRecordStopped = true;
+      console.log("Submit Test");
+  }else if (transcript.includes("repeat question")) {
+      isRecordStopped = true;
+      questionChanged = false;
+      readQuestion(questionNumber)
+      console.log("Repeat Question");
+  }else{
+
+      var currentQuestion = extractedQuestions[questionNumber - 1];
+      let answer = '';
+      let response;
+      const key = `question_${questionNumber}`;
+    questionElements.forEach(questionElement => {
+        const textarea = questionElement.querySelector('.user_response');
+
+        if (textarea && textarea.id === currentQuestion.question_id) {
+            
+          if(questionChanged){
+
+              questionElement.answer = transcript;
+              answer = transcript
+              textarea.value = transcript;
+              console.log(transcript);
+              response = {
+                  question: currentQuestion.question_text,
+                  answer: answer,
+                  question_id: currentQuestion.question_id
+              }
+              userResponse.push(response)
+          }else{
+              questionElement.answer += ` ${transcript}`;
+              answer += ` ${transcript}`;
+              textarea.value += ` ${transcript}`;
+              response = {
+                  question: currentQuestion.question_text,
+                  answer: answer,
+                  question_id: currentQuestion.question_id
+              }
+
+              userResponse.push(response)
           }
-          syn.speak(navQustions);
-          navQustions.onend = function (event) {
-            console.log("speak time:" + event.elapsedTime + " milliseconds.");
-            console.log("question no: " + qNo);
-            speechQuestion(qNo, navQus);
-          };
         }
-      }
-    }
-
-    console.log("Confidence: " + event.results[0][0].confidence);
-  };
-
-  recognition.onend = function () {
-    console.log("onend");
-    if (flag == 1 || flag == 2 || flag == 4 || flag == 6) {
-      console.log("onend if");
-      recognition.stop();
-    } else if (navQus > 0) {
-      var navQustions;
-      console.log("next else" + navQus);
-      recognition.stop();
-      if (navQus == 1) {
-        console.log("next if");
-        navQustions = new SpeechSynthesisUtterance(
-          "For next question say next question"
-        );
-        speakNav(navQustions);
-      } else if (navQus == 2) {
-        console.log("next else if");
-        navQustions = new SpeechSynthesisUtterance(
-          "This is your final question. For previous question say previous question or to submit the test say submit"
-        );
-        speakNav(navQustions);
-      } else if (navQus == 3) {
-        console.log("next else");
-        navQustions = new SpeechSynthesisUtterance(
-          "For next question say next question and for previous question say previous question"
-        );
-        speakNav(navQustions);
-      }
-      console.log("next end");
-    } else {
-      if (flag == 5 || flag == 6) {
-        recognition.stop();
-      } else {
-        console.log("onend else");
-        recognition.stop();
-        readQuestion(qNo);
-      }
-      flag = 3;
-    }
-  };
-
-  recognition.onerror = function (event) {
-    if (navQus > 0) {
-      flag = 6;
-      recognition.stop();
-      console.log("error next else");
-      if (navQus == 1) {
-        var navQustion = new SpeechSynthesisUtterance(
-          "For next question say next question"
-        );
-      } else if (navQus == 2) {
-        var navQustion = new SpeechSynthesisUtterance(
-          "This is your final question. For previous question say previous question or to submit the test say submit"
-        );
-      } else if (navQus == 3) {
-        var navQustion = new SpeechSynthesisUtterance(
-          "For next question say next question and for previous question say previous question"
-        );
-      }
-      syn.speak(navQustion);
-      navQustion.onend = function (event) {
-        console.log("speak time:" + event.elapsedTime + " milliseconds.");
-        console.log("question no: " + qNo);
-        speechQuestion(qNo, navQus);
-      };
-    } else if (flag != 3) {
-      flag = 5;
-      console.log("error next");
-      recognition.stop();
-      readQuestion(qNo);
-    }
-  };
-}
-
-var a = [
-  "",
-  "one ",
-  "two ",
-  "three ",
-  "four ",
-  "five ",
-  "six ",
-  "seven ",
-  "eight ",
-  "nine ",
-  "ten ",
-  "eleven ",
-  "twelve ",
-  "thirteen ",
-  "fourteen ",
-  "fifteen ",
-  "sixteen ",
-  "seventeen ",
-  "eighteen ",
-  "nineteen ",
-];
-var b = [
-  "",
-  "",
-  "twenty",
-  "thirty",
-  "forty",
-  "fifty",
-  "sixty",
-  "seventy",
-  "eighty",
-  "ninety",
-];
-
-function inWords(num) {
-  if ((num = num.toString()).length > 9) return "overflow";
-  n = ("000000000" + num)
-    .substr(-9)
-    .match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
-  if (!n) return;
-  var str = "";
-  str +=
-    n[1] != 0
-      ? (a[Number(n[1])] || b[n[1][0]] + " " + a[n[1][1]]) + "crore "
-      : "";
-  str +=
-    n[2] != 0
-      ? (a[Number(n[2])] || b[n[2][0]] + " " + a[n[2][1]]) + "lakh "
-      : "";
-  str +=
-    n[3] != 0
-      ? (a[Number(n[3])] || b[n[3][0]] + " " + a[n[3][1]]) + "thousand "
-      : "";
-  str +=
-    n[4] != 0
-      ? (a[Number(n[4])] || b[n[4][0]] + " " + a[n[4][1]]) + "hundred "
-      : "";
-  str +=
-    n[5] != 0
-      ? (str != "" ? "and " : "") +
-        (a[Number(n[5])] || b[n[5][0]] + " " + a[n[5][1]])
-      : "";
-  return str;
-}
-
-function speakNav(navQustions) {
-  console.log("navQustion:" + navQustions);
-  syn.speak(navQustions);
-  navQustions.onend = function (event) {
-    console.log("speak time:" + event.elapsedTime + " milliseconds.");
-    console.log("question no: " + qNo);
-    speechQuestion(qNo, navQus);
-  };
-}
-
-function option(m, n, speechResult) {
-  var navQ;
-  console.log("m " + m + " n " + n);
-  console.log("qNo(option):" + qNo);
-  speakOption(speechResult);
-  radios = document.getElementsByName("qus" + m);
-  radios[n].checked = "true";
-  console.log("oq-options" + m + "" + (n + 1));
-  ans = document.getElementById("oq-options" + m + "" + (n + 1)).innerHTML;
-  var opt = new SpeechSynthesisUtterance(ans);
-  syn.speak(opt);
-  if (m == 1) {
-    navQ = new SpeechSynthesisUtterance("For next question say next question");
-    syn.speak(navQ);
-    navQ.onend = function (event) {
-      console.log("speak time:" + event.elapsedTime + " milliseconds.");
-      speechQuestion(m, 1);
-    };
-  } else if (m == count) {
-    navQ = new SpeechSynthesisUtterance(
-      "This is your final question. For previous question say previous question or to submit the test say submit."
-    );
-    syn.speak(navQ);
-    navQ.onend = function (event) {
-      console.log("speak time:" + event.elapsedTime + " milliseconds.");
-      speechQuestion(m, 2);
-    };
-  } else {
-    navQ = new SpeechSynthesisUtterance(
-      "For next question say next question and for previous question say previous question"
-    );
-    syn.speak(navQ);
-    navQ.onend = function (event) {
-      console.log("speak time:" + event.elapsedTime + " milliseconds.");
-      speechQuestion(m, 3);
-    };
+    });
   }
 }
 
-function speakOption(speechResult) {
-  resultPara2.textContent = "Speech received: " + speechResult + ".";
-  var syn = window.speechSynthesis;
-  var testhead = document.getElementById("spresult2").textContent;
-  var testThis = new SpeechSynthesisUtterance(testhead);
-  syn.speak(testThis);
+function saveToLocalStorage(questionNumber) {
+
+  const currentQuestionResponse = userResponse.find(response => response.question_id === extractedQuestions[questionNumber - 1].question_id);
+  const key = `question_${questionNumber}`;
+
+  if (localStorage.getItem(key)) {
+      localStorage.setItem(key, JSON.stringify(currentQuestionResponse)); // If it exists, override it
+  } else {
+      localStorage.setItem(key, JSON.stringify(currentQuestionResponse)); // If it doesn't exist, create a new entry
+  }
 }
+
+function readQuestion(qNo){
+
+  if (isRecordStopped) {
+    console.log("isRecordStopped === false", isRecordStopped);
+    answerRecognition.stop();
+  }
+
+  if(extractedQuestions.length >= qNo){
+      var ques = extractedQuestions[(qNo-1)].question_text;
+      var quesThis = new SpeechSynthesisUtterance(ques);
+
+      quesThis.onend = function () {
+        answerRecognition.start(); 
+      };
+      synth.speak(quesThis);
+
+  }else{
+      var quesThis = new SpeechSynthesisUtterance("This was the last question. Say previous question or say Submit Test");
+      synth.speak(quesThis);
+  }
+}
+
+function readOut(message) {
+  const speech = new SpeechSynthesisUtterance();
+  speech.text = message;
+  speech.volume = 1;
+  window.speechSynthesis.speak(speech);
+  console.log("Speaking out");
+};
+
+
+answerRecognition.onend = function () {
+  console.log("Stopping Recording");
+  isRecordStopped = true;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// var qNo = 1;
+
+// function readTimerQuestion() {
+//   var speakTimer = document.getElementById("speakTimer").textContent;
+//   var timeThis = new SpeechSynthesisUtterance(speakTimer);
+//   syn.speak(timeThis);
+//   var ques = document.getElementById("ques1").textContent;
+//   var quesThis = new SpeechSynthesisUtterance(ques);
+//   syn.speak(quesThis);
+//   quesThis.onend = function (event) {
+//     console.log("speak time:" + event.elapsedTime + " milliseconds.");
+//     speechQuestion(qNo, 0);
+//   };
+// }
+// function readQuestion(qNo) {
+//   var ques = document.getElementById("ques" + qNo).textContent;
+//   var quesThis = new SpeechSynthesisUtterance(ques);
+//   syn.speak(quesThis);
+//   quesThis.onend = function (event) {
+//     console.log("speak time:" + event.elapsedTime + " milliseconds.");
+//     speechQuestion(qNo, 0);
+//   };
+// }
+
+// var resultPara2 = document.querySelector(".spresult2");
+// var navQus = 0;
+// function speechQuestion(qNo, navQus) {
+//   var flag = 0;
+//   var l = 1;
+//   var qwords = "";
+//   var words =
+//     "repeat question | repeat options | option 1 | option one | option b | option c | option d | option e | next question";
+//   while (l <= count) {
+//     qwords = qwords + "question " + l + " | question " + inWords(l) + " | ";
+//     console.log("qwords : " + qwords);
+//     l++;
+//   }
+//   qwords = qwords + words;
+//   console.log("qwords " + qwords);
+//   console.log("in testspeech");
+//   var grammar = "#JSGF V1.0; grammar phrase; public <phrase> = " + qwords + ";";
+//   console.log(SpeechRecognition);
+//   var recognition = new SpeechRecognition();
+//   var speechRecognitionList = new SpeechGrammarList();
+//   speechRecognitionList.addFromString(grammar, 1);
+//   recognition.grammars = speechRecognitionList;
+//   recognition.lang = "en-US";
+//   recognition.interimResults = false;
+//   recognition.maxAlternatives = 1;
+//   recognition.start();
+//   console.log("qNo(speechQus:" + qNo);
+//   recognition.onresult = function (event) {
+//     var speechResult = event.results[0][0].transcript;
+//     console.log("speechResult:" + speechResult);
+//     var syn = window.speechSynthesis;
+//     var ans;
+//     var radios;
+//     console.log("no " + qNo);
+//     for (l = 1; l <= count; l++) {
+//       var temper = "question " + l;
+//       var temper1 = "question " + inWords(l);
+//       console.log("temper:" + temper + " temper1:" + temper1);
+//       if (speechResult == temper || speechResult == temper1) {
+//         qNo = l;
+//         flag = 1;
+//         readQuestion(qNo);
+//         break;
+//       }
+//     }
+//     if (l > count) {
+//       if (speechResult == "repeat question") {
+//         flag = 1;
+//         speakQuestion(speechResult);
+//         readQuestion(qNo);
+//       } else if (speechResult == "option 1" || speechResult == "option one") {
+//         flag = 1;
+//         option(qNo, 0, speechResult);
+//       } else if (
+//         speechResult == "option 2" ||
+//         speechResult == "option two" ||
+//         speechResult == "option to"
+//       ) {
+//         flag = 1;
+//         option(qNo, 1, speechResult);
+//       } else if (speechResult == "option 3" || speechResult == "option three") {
+//         flag = 1;
+//         option(qNo, 2, speechResult);
+//       } else if (
+//         speechResult == "option 4" ||
+//         speechResult == "option four" ||
+//         speechResult == "option for"
+//       ) {
+//         flag = 1;
+//         option(qNo, 3, speechResult);
+//       } else if (speechResult == "option 5" || speechResult == "option five") {
+//         flag = 1;
+//         option(qNo, 4, speechResult);
+//       } else if (speechResult == "next question") {
+//         flag = 1;
+//         qNo++;
+//         readQuestion(qNo);
+//       } else if (speechResult == "previous question") {
+//         flag = 1;
+//         qNo--;
+//         readQuestion(qNo);
+//       } else if (speechResult == "submit" || speechResult == "submit test") {
+//         flag = 1;
+//         document.getElementById("oqsubmit").click();
+//       } else {
+//         if (navQus == 0) {
+//           flag = 2;
+//           console.log("ques if");
+//           resultPara2.textContent =
+//             "Speech received: " + speechResult + ". No such operation.";
+//           var testhead = document.getElementById("spresult2").textContent;
+//           var navQustion = new SpeechSynthesisUtterance(testhead);
+//           syn.speak(navQustion);
+//           navQustion.onend = function (event) {
+//             readQuestion(qNo);
+//           };
+//         } else {
+//           flag = 4;
+//           console.log("ques else");
+//           if (navQus == 1) {
+//             var navQustions = new SpeechSynthesisUtterance(
+//               "For next question say next question"
+//             );
+//           } else if (navQus == 2) {
+//             var navQustions = new SpeechSynthesisUtterance(
+//               "This is your final question. For previous question say previous question or to submit the test say submit"
+//             );
+//           } else if (navQus == 3) {
+//             var navQustions = new SpeechSynthesisUtterance(
+//               "For next question say next question and for previous question say previous question"
+//             );
+//           }
+//           syn.speak(navQustions);
+//           navQustions.onend = function (event) {
+//             console.log("speak time:" + event.elapsedTime + " milliseconds.");
+//             console.log("question no: " + qNo);
+//             speechQuestion(qNo, navQus);
+//           };
+//         }
+//       }
+//     }
+
+//     console.log("Confidence: " + event.results[0][0].confidence);
+//   };
+
+//   recognition.onend = function () {
+//     console.log("onend");
+//     if (flag == 1 || flag == 2 || flag == 4 || flag == 6) {
+//       console.log("onend if");
+//       recognition.stop();
+//     } else if (navQus > 0) {
+//       var navQustions;
+//       console.log("next else" + navQus);
+//       recognition.stop();
+//       if (navQus == 1) {
+//         console.log("next if");
+//         navQustions = new SpeechSynthesisUtterance(
+//           "For next question say next question"
+//         );
+//         speakNav(navQustions);
+//       } else if (navQus == 2) {
+//         console.log("next else if");
+//         navQustions = new SpeechSynthesisUtterance(
+//           "This is your final question. For previous question say previous question or to submit the test say submit"
+//         );
+//         speakNav(navQustions);
+//       } else if (navQus == 3) {
+//         console.log("next else");
+//         navQustions = new SpeechSynthesisUtterance(
+//           "For next question say next question and for previous question say previous question"
+//         );
+//         speakNav(navQustions);
+//       }
+//       console.log("next end");
+//     } else {
+//       if (flag == 5 || flag == 6) {
+//         recognition.stop();
+//       } else {
+//         console.log("onend else");
+//         recognition.stop();
+//         readQuestion(qNo);
+//       }
+//       flag = 3;
+//     }
+//   };
+
+//   recognition.onerror = function (event) {
+//     if (navQus > 0) {
+//       flag = 6;
+//       recognition.stop();
+//       console.log("error next else");
+//       if (navQus == 1) {
+//         var navQustion = new SpeechSynthesisUtterance(
+//           "For next question say next question"
+//         );
+//       } else if (navQus == 2) {
+//         var navQustion = new SpeechSynthesisUtterance(
+//           "This is your final question. For previous question say previous question or to submit the test say submit"
+//         );
+//       } else if (navQus == 3) {
+//         var navQustion = new SpeechSynthesisUtterance(
+//           "For next question say next question and for previous question say previous question"
+//         );
+//       }
+//       syn.speak(navQustion);
+//       navQustion.onend = function (event) {
+//         console.log("speak time:" + event.elapsedTime + " milliseconds.");
+//         console.log("question no: " + qNo);
+//         speechQuestion(qNo, navQus);
+//       };
+//     } else if (flag != 3) {
+//       flag = 5;
+//       console.log("error next");
+//       recognition.stop();
+//       readQuestion(qNo);
+//     }
+//   };
+// }
+
+// var a = [
+//   "",
+//   "one ",
+//   "two ",
+//   "three ",
+//   "four ",
+//   "five ",
+//   "six ",
+//   "seven ",
+//   "eight ",
+//   "nine ",
+//   "ten ",
+//   "eleven ",
+//   "twelve ",
+//   "thirteen ",
+//   "fourteen ",
+//   "fifteen ",
+//   "sixteen ",
+//   "seventeen ",
+//   "eighteen ",
+//   "nineteen ",
+// ];
+// var b = [
+//   "",
+//   "",
+//   "twenty",
+//   "thirty",
+//   "forty",
+//   "fifty",
+//   "sixty",
+//   "seventy",
+//   "eighty",
+//   "ninety",
+// ];
+
+// function inWords(num) {
+//   if ((num = num.toString()).length > 9) return "overflow";
+//   n = ("000000000" + num)
+//     .substr(-9)
+//     .match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+//   if (!n) return;
+//   var str = "";
+//   str +=
+//     n[1] != 0
+//       ? (a[Number(n[1])] || b[n[1][0]] + " " + a[n[1][1]]) + "crore "
+//       : "";
+//   str +=
+//     n[2] != 0
+//       ? (a[Number(n[2])] || b[n[2][0]] + " " + a[n[2][1]]) + "lakh "
+//       : "";
+//   str +=
+//     n[3] != 0
+//       ? (a[Number(n[3])] || b[n[3][0]] + " " + a[n[3][1]]) + "thousand "
+//       : "";
+//   str +=
+//     n[4] != 0
+//       ? (a[Number(n[4])] || b[n[4][0]] + " " + a[n[4][1]]) + "hundred "
+//       : "";
+//   str +=
+//     n[5] != 0
+//       ? (str != "" ? "and " : "") +
+//         (a[Number(n[5])] || b[n[5][0]] + " " + a[n[5][1]])
+//       : "";
+//   return str;
+// }
+
+// function speakNav(navQustions) {
+//   console.log("navQustion:" + navQustions);
+//   syn.speak(navQustions);
+//   navQustions.onend = function (event) {
+//     console.log("speak time:" + event.elapsedTime + " milliseconds.");
+//     console.log("question no: " + qNo);
+//     speechQuestion(qNo, navQus);
+//   };
+// }
+
+// function option(m, n, speechResult) {
+//   var navQ;
+//   console.log("m " + m + " n " + n);
+//   console.log("qNo(option):" + qNo);
+//   speakOption(speechResult);
+//   radios = document.getElementsByName("qus" + m);
+//   radios[n].checked = "true";
+//   console.log("oq-options" + m + "" + (n + 1));
+//   ans = document.getElementById("oq-options" + m + "" + (n + 1)).innerHTML;
+//   var opt = new SpeechSynthesisUtterance(ans);
+//   syn.speak(opt);
+//   if (m == 1) {
+//     navQ = new SpeechSynthesisUtterance("For next question say next question");
+//     syn.speak(navQ);
+//     navQ.onend = function (event) {
+//       console.log("speak time:" + event.elapsedTime + " milliseconds.");
+//       speechQuestion(m, 1);
+//     };
+//   } else if (m == count) {
+//     navQ = new SpeechSynthesisUtterance(
+//       "This is your final question. For previous question say previous question or to submit the test say submit."
+//     );
+//     syn.speak(navQ);
+//     navQ.onend = function (event) {
+//       console.log("speak time:" + event.elapsedTime + " milliseconds.");
+//       speechQuestion(m, 2);
+//     };
+//   } else {
+//     navQ = new SpeechSynthesisUtterance(
+//       "For next question say next question and for previous question say previous question"
+//     );
+//     syn.speak(navQ);
+//     navQ.onend = function (event) {
+//       console.log("speak time:" + event.elapsedTime + " milliseconds.");
+//       speechQuestion(m, 3);
+//     };
+//   }
+// }
+
+// function speakOption(speechResult) {
+//   resultPara2.textContent = "Speech received: " + speechResult + ".";
+//   var syn = window.speechSynthesis;
+//   var testhead = document.getElementById("spresult2").textContent;
+//   var testThis = new SpeechSynthesisUtterance(testhead);
+//   syn.speak(testThis);
+// }

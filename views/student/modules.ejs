@@ -91,15 +91,16 @@
 
     wordElement.forEach(word => {
         // console.log(word.textContent.slice(0, -1));
+        // console.log("word.textContent.slice(0, -1)", word.textContent.slice(0, -1));
         words.push(word.textContent.slice(0, -1))
     });
 
     moduleCodeElement.forEach(word => {
-        // console.log(JSON.parse(word.textContent));
+        // console.log('JSON.parse(word.textContent)', JSON.parse(word.textContent));
         modulesCode.push(JSON.parse(word.textContent))
     });
 
-    console.log("words" , words);
+    // console.log("words" , words);
 
     if(words.length == 0 && modulesCode.length == 0){
         setTimeout(function(){
@@ -107,11 +108,16 @@
         }, 7000);
     }
     function findModuleCodeByName(moduleName) {
-    const module = modulesCode.find(module => module.module_name.toLowerCase().trim() === moduleName.toLowerCase().trim());
+        moduleName = moduleName.replace(/\.$/, '');
+        
+        const module = modulesCode.find(module => module.module_name.toLowerCase().trim() === moduleName.toLowerCase().trim());
+
+        console.log("Im calling inside : findModuleCodeByName", module);
+
         return module ? module.module_code : null;
     }
 
-    console.log("findModuleCodeByName(module 2) :", findModuleCodeByName("module 2"));
+    // console.log("findModuleCodeByName(Web Development Basics) :", findModuleCodeByName("Web Development Basics"));
 
     var syn = window.speechSynthesis;
     var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
@@ -156,6 +162,9 @@
                     syn.speak(testThis);
                     console.log(testThis);
                     testThis.onend = function(event) {
+                        // console.log("speechResult", speechResult);
+                        // console.log("findModuleCodeByName(speechResult)", findModuleCodeByName(speechResult));
+
                         window.location = "/modules/" + findModuleCodeByName(speechResult) ;
                     }
                     break;

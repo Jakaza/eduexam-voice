@@ -21,7 +21,7 @@ async function seed() {
       user_role: "ADMIN",
       phone_number: "0711770423",
       user_address: "eduvoiceexam",
-      course_id: 5,
+      course_id: 3,
       identification_number: "00000000",
       registration_date: new Date(),
       created_at: new Date(),

@@ -106,6 +106,7 @@
     console.log(words);
 
     function findTestByName(testName) {
+    testName = testName.replace(/\.$/, '');
     const test = testId.find(test => test.test_name.toLowerCase().trim() === testName.toLowerCase().trim());
         return test ? test.test_id : null;
     }
