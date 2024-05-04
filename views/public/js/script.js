@@ -312,8 +312,11 @@ answerRecognition.onresult = function (event) {
 
       console.log("Read Previous Question");
   }else if (transcript.includes("submit test") || transcript.includes("submit")) {
-      isRecordStopped = true;
-      console.log("Submit Test");
+    
+    if (isRecordStopped) {
+      answerRecognition.stop();
+    }
+
   }else if (transcript.includes("repeat question")) {
       isRecordStopped = true;
       questionChanged = false;
