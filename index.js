@@ -56,20 +56,20 @@ app.post("/email/account", async (req, res) => {
 const server = http.createServer(app);
 
 
-const io = socketIo(server);
+// const io = socketIo(server);
 
-io.on('connection', (socket) => {
-    console.log('A client connected');
+// io.on('connection', (socket) => {
+//     console.log('A client connected');
 
-    socket.on('userResponse', (data) => {
-        console.log('Data received from client:', data);
-    });
+//     socket.on('userResponse', (data) => {
+//         console.log('Data received from client:', data);
+//     });
 
-    // Handle disconnection
-    socket.on('disconnect', () => {
-        console.log('A client disconnected');
-    });
-});
+//     // Handle disconnection
+//     socket.on('disconnect', () => {
+//         console.log('A client disconnected');
+//     });
+// });
 
 app.get("/*", (req, res) => res.render("error/404"));
 

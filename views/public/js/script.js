@@ -14,8 +14,7 @@ testThis.onend = function (event) {
   console.log(
     "Test head over. speak time:" + event.elapsedTime + " milliseconds."
   );
-  readFirstQuestion();
-  // instruct();
+  instruct();
 };
 
 function instruct() {
@@ -156,8 +155,6 @@ function speech(testValue) {
         console.log("speak time:" + event.elapsedTime + " milliseconds.");
         timer();
         readTimerQuestion();
-        //:TODO Read The First Question Here
-        
       };
     } else {
       flag = 2;
@@ -175,6 +172,11 @@ function speech(testValue) {
 
     console.log("Confidence: " + event.results[0][0].confidence);
   };
+
+
+
+
+
 
   recognition.onend = function () {
     
@@ -223,12 +225,8 @@ function readTimerQuestion() {
   var speakTimer = document.getElementById("speakTimer").textContent;
   var timeThis = new SpeechSynthesisUtterance(speakTimer);
   syn.speak(timeThis);
-  var ques = document.getElementById("ques1").textContent;
-  var quesThis = new SpeechSynthesisUtterance(ques);
-  syn.speak(quesThis);
-  quesThis.onend = function (event) {
-    console.log("speak time:" + event.elapsedTime + " milliseconds.");
-    speechQuestion(qNo, 0);
+  timeThis.onend = function (event) {
+    readFirstQuestion();
   };
 }
 
@@ -296,7 +294,6 @@ answerRecognition.onresult = function (event) {
   if (transcript.includes("next question")) {
       saveToLocalStorage(questionNumber);
       console.log(userResponse);
-      isRecordStopped = true;
       questionChanged = false;
       questionNumber++;
       readQuestion(questionNumber)
@@ -305,7 +302,6 @@ answerRecognition.onresult = function (event) {
       saveToLocalStorage(questionNumber);
       console.log(userResponse);
       questionNumber--;
-      isRecordStopped = true;
       questionChanged = true;
       readQuestion(questionNumber)
       
@@ -316,6 +312,11 @@ answerRecognition.onresult = function (event) {
     if (isRecordStopped) {
       answerRecognition.stop();
     }
+    var quesThis = new SpeechSynthesisUtterance("The submit functionality is not yet implemented I am logging you out in few seconds");
+    quesThis.onend = function () {
+      window.location = "/auth/logout" 
+    };
+    synth.speak(quesThis);
 
   }else if (transcript.includes("repeat question")) {
       isRecordStopped = true;
@@ -382,8 +383,8 @@ function readQuestion(qNo){
   }
 
   if(extractedQuestions.length >= qNo){
-      var ques = extractedQuestions[(qNo-1)].question_text;
-      var quesThis = new SpeechSynthesisUtterance(ques);
+      let ques = extractedQuestions[(qNo-1)].question_text;
+      let quesThis = new SpeechSynthesisUtterance(ques);
 
       quesThis.onend = function () {
         answerRecognition.start(); 
@@ -391,7 +392,10 @@ function readQuestion(qNo){
       synth.speak(quesThis);
 
   }else{
-      var quesThis = new SpeechSynthesisUtterance("This was the last question. Say previous question or say Submit Test");
+      let quesThis = new SpeechSynthesisUtterance("This was the last question. Say previous question or say Submit Test");
+      quesThis.onend = function () {
+        answerRecognition.start(); 
+      };
       synth.speak(quesThis);
   }
 }

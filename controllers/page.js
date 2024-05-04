@@ -44,7 +44,7 @@ const Page = {
             module_id: modules ? modules[0].module_id : "",
           });
         }
-        res.redirect("/");
+        res.redirect("./");
       }
     )(req, res, next);
   },
