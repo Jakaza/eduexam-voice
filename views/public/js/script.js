@@ -312,7 +312,7 @@ answerRecognition.onresult = function (event) {
 
       console.log("Read Previous Question");
   }else if (transcript.includes("submit test") || transcript.includes("submit")) {
-    
+
     if (isRecordStopped) {
       answerRecognition.stop();
     }
@@ -354,7 +354,6 @@ answerRecognition.onresult = function (event) {
                   answer: answer,
                   question_id: currentQuestion.question_id
               }
-
               userResponse.push(response)
           }
         }
@@ -373,6 +372,7 @@ function saveToLocalStorage(questionNumber) {
       localStorage.setItem(key, JSON.stringify(currentQuestionResponse)); // If it doesn't exist, create a new entry
   }
 }
+
 
 function readQuestion(qNo){
 

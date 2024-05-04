@@ -1,7 +1,8 @@
 require("dotenv").config();
 const express = require("express");
 const path = require("path");
-const http = require("http");
+const http = require('http');
+const socketIo = require('socket.io');
 const bodyParser = require("body-parser");
 const app = express();
 const routes = require("./routes");
@@ -52,8 +53,26 @@ app.post("/email/account", async (req, res) => {
   }
 });
 
-app.get("/*", (req, res) => res.render("error/404"));
 const server = http.createServer(app);
+
+
+const io = socketIo(server);
+
+io.on('connection', (socket) => {
+    console.log('A client connected');
+
+    socket.on('userResponse', (data) => {
+        console.log('Data received from client:', data);
+    });
+
+    // Handle disconnection
+    socket.on('disconnect', () => {
+        console.log('A client disconnected');
+    });
+});
+
+app.get("/*", (req, res) => res.render("error/404"));
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Server is up at port ${PORT}`);
