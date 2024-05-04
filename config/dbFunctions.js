@@ -2,7 +2,7 @@ const { Pool } = require("pg");
 const bcrypt = require("bcrypt");
 
 const pool = new Pool({
-  connectionString: process.env.PG_URL,
+  connectionString: process.env.LOCAL_PG_URL,
 });
 
 module.exports = pool;
