@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS responses (
     question_id INT REFERENCES questions(question_id) ON DELETE CASCADE,
     student_id INT REFERENCES users(user_id) ON DELETE CASCADE,
     answer_text TEXT NOT NULL,
-    score INT,
+    outcome VARCHAR(10) NOT NULL,
     submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

@@ -139,7 +139,17 @@ const Auth = {
           )} number or password... Enter correct credentials`,
         });
       }
+
       userExist = userExist[0];
+
+      if(userExist == undefined){
+        return res.status(STATUS_CODE.Bad_Request).json({
+          status: false,
+          message: `Incorrect ${tooLowerCase(
+            user_role
+          )} number or password... Enter correct credentials`,
+        });
+      }
 
       const isMatched = await bcrypt.compare(password, userExist.password_hash);
       if (!isMatched || user_role !== userExist.user_role) {

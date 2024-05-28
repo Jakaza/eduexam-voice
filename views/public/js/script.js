@@ -251,6 +251,29 @@ function extractQuestionsFromHTML() {
     });
     return extractedQuestions;
 }
+
+function extractQuestionsWithAnswersFromHTML() {
+  const extractedQuestions = [];
+  const questionsContainer = document.getElementById('questionsContainer');    
+  questionElements.forEach((questionElement, index) => {
+      const questionText = questionElement.querySelector('button').textContent.trim();
+      const questionId = questionElement.querySelector('input[name^="question_id"]').value;
+      const testId = questionElement.querySelector('input[name^="test_id"]').value;
+      const userResponse = questionElement.querySelector('textarea[name="user_response"]').value;
+  
+      const question = {
+          question_id: questionId,
+          test_id: testId,
+          question_text: questionText,
+          answer: userResponse 
+      };
+      extractedQuestions.push(question);
+  });
+  return extractedQuestions;
+}
+
+
+
 const extractedQuestions = extractQuestionsFromHTML();
 extractedQuestions.forEach((question, index) => {
     console.log(`${question.question_text}`);
@@ -308,21 +331,70 @@ answerRecognition.onresult = function (event) {
 
       console.log("Read Previous Question");
   }else if (transcript.includes("submit test") || transcript.includes("submit")) {
+    const extractedQuestionsAnswers = extractQuestionsWithAnswersFromHTML();
+    extractedQuestionsAnswers.forEach((question, index) => {
+        console.log(`${question.question_text}`);
+        console.log(`Question ID: ${question.question_id}`);
+        console.log(`Test ID: ${question.test_id}`);
+        console.log(`Answer: ${question.answer}`);
+    });
+    console.log("START");
+    extractedQuestionsAnswers.forEach(question => {
+        fetch('/exam/evaluate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(question),
+        })
+        .then(response => response.json())
+        .then(result => console.log(result))
+        .catch(error => console.error('Error:', error));
+    });
 
-    if (isRecordStopped) {
-      answerRecognition.stop();
-    }
-    var quesThis = new SpeechSynthesisUtterance("The submit functionality is not yet implemented I am logging you out in few seconds");
-    quesThis.onend = function () {
-      window.location = "/auth/logout" 
-    };
-    synth.speak(quesThis);
 
-  }else if (transcript.includes("repeat question")) {
+    // MUST REDIRECT TO OTHER PAGE WHEN IT'S DONE 
+
+    console.log("END");
+
+
+    // const allQuestionsAnswered = extractedQuestionsAnswers.every(question => question.answer !== "");
+    // if (!allQuestionsAnswered) {
+    //   console.error("Not all questions have answers");
+    //   if (isRecordStopped) {
+    //     answerRecognition.stop();
+    //   }
+    //   let statement = new SpeechSynthesisUtterance("You did not answered all the questions are you you want to submit say 'YES' or Next Question");
+    //   synth.speak(statement);
+
+    //   statement.onend = function () {
+    //     answerRecognition.start();
+    //   };
+    // }else{
+    //   // Submit Here
+    //   // let statement = new SpeechSynthesisUtterance("I am submitting all your answers now wait a seconds");
+    //   var statement = new SpeechSynthesisUtterance("The submit functionality is not yet implemented I am logging you out in few seconds");
+    //   synth.speak(statement);
+    //   statement.onend = function () {
+    //     // window.location = "/student/outcome" 
+    //   };
+    // }
+
+  }else if (transcript.includes("yes")) {
       isRecordStopped = true;
       questionChanged = false;
       readQuestion(questionNumber)
       console.log("Repeat Question");
+  }else if (transcript.includes("yes submit")) {
+    if (isRecordStopped) {
+      answerRecognition.stop();
+    }
+    // let statement = new SpeechSynthesisUtterance("I am submitting all your answers now wait a seconds");
+    var statement = new SpeechSynthesisUtterance("The submit functionality is not yet implemented I am logging you out in few seconds");
+    statement.onend = function () {
+      // window.location = "/auth/logout" 
+    };
+    synth.speak(statement);
   }else{
 
       var currentQuestion = extractedQuestions[questionNumber - 1];
@@ -361,6 +433,10 @@ answerRecognition.onresult = function (event) {
     });
   }
 }
+
+
+
+
 
 function saveToLocalStorage(questionNumber) {
 

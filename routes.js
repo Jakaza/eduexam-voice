@@ -7,6 +7,7 @@ const Module = require("./controllers/module");
 const Test = require("./controllers/test");
 const Question = require("./controllers/question");
 const SuperAdmin = require("./controllers/admin");
+const Exam = require("./controllers/exam");
 
 // rendering pages - ejs
 router.get("/", isUserLoggedIn, Page.homePage);
@@ -47,5 +48,10 @@ router.post("/test/update/:testID/:moduleID", Test.update);
 router.post("/question/create", Question.create);
 router.get("/question/delete/:questionID/:testId", Question.delete);
 router.post("/question/update/:questionID/:testId", Question.update);
+
+
+// Exam
+router.post("/exam/evaluate", Exam.evaluate);
+
 
 module.exports = router;
