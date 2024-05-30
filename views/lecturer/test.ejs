@@ -122,6 +122,7 @@
                     <th>Test Name</th>
                     <th>Time</th>
                     <th>Operations</th>
+                    <th>Generate Report</th>
                   </tr>
                   <% tests.forEach((test, index) => { %>
                   <tr>
@@ -152,6 +153,17 @@
                         ><span class="glyphicon glyphicon-remove"></span>
                         Delete</a
                       >
+                    </td>
+                    <td>
+                      &nbsp;
+                      <a
+                        href='<%= "/writen-test/view?test=" + test.test_id %>'
+                        class="oq-btn"
+                      >
+                        <span class="glyphicon glyphicon-pencil"></span>
+                        View Student Wrote Test
+                      </a>
+                      &nbsp;
                     </td>
                   </tr>
                   <div

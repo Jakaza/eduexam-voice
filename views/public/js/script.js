@@ -349,6 +349,7 @@ answerRecognition.onresult = function (event) {
   });
   Promise.all(evaluationPromises)
   .then(() => {
+      window.location = '/exam/result';
       console.log("END");
   })
   .catch(error => console.error('Error:', error));

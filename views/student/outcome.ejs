@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Welcome Online Exam</title>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="/css/font/flaticon.css" />
+    <!--<link href='https://fonts.googleapis.com/css?family=Fira+Sans|Josefin+Sans' rel='stylesheet'>-->
+    <meta charset="UTF-8" />
+    <meta name="description" content="Online Exam" />
+    <meta name="author" content="Goodness Themba Chauke" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+</head>
+  <body>
+    <div class="oq-header">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="">
+              <a href="index.php"
+                ><img src="/images/quiz.png" class="oq-logo"
+              /></a>
+            </div>
+          </div>
+          <div class="col-md-8">
+            <div class="oq-userArea pull-right">
+              <span class="oq-username">
+                <%= user.first_name + ' ' + user.last_name %>
+              </span>
+              <!-- <a class="btn btn-primary" href="logout.php?logout">Logout</a> -->
+              <a class="oq-btn btn btn-primary" href="/auth/logout">Logout</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class='oq-userResultBody'>
+        <div class='container-fluid'>
+            <div class='row'>
+                <div class='col-md-8 col-md-offset-2'>
+                    <div class="oq-userResult">
+                        <h5>Following consists of tests scores along with the subject name:</h5><br>
+                       <table class='table oq-table'>
+                           <tr class="usertable">
+                                <th>Sno.</th>
+                                <th>Subject name</th>
+                                <th>Test name</th>
+                                <th>Score</th>
+                           </tr>
+
+                           <tr class="">
+                            <th>Sno.</th>
+                            <th> <%= subject %></th>
+                            <th><%= testName %></th>
+                            <th><%= correctCount %></th>
+                    
+                       </tr>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    
+    <script src="/js/jquery-3.1.1.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
+    <script src="/js/script.js"></script>
+  </body>
+</html>
