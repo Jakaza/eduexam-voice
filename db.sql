@@ -38,8 +38,6 @@ CREATE TABLE IF NOT EXISTS tests (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
-
 CREATE TABLE IF NOT EXISTS questions (
     question_id SERIAL PRIMARY KEY,
     question_text TEXT NOT NULL,
