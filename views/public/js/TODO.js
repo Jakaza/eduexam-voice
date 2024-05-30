@@ -1,5 +1,7 @@
 
 const extractedQuestionsAnswers = extractQuestionsWithAnswersFromHTML();
+
+
 const evaluationPromises = extractedQuestionsAnswers.map(question => {
     return fetch('/exam/evaluate', {
         method: 'POST',
