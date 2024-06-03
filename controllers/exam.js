@@ -1,6 +1,7 @@
 const passport = require("passport");
 const {
-  createData
+  createData,
+  selectWithCondition
 } = require("../config/dbFunctions");
 const OPENAI_API_KEY = process.env['OPENAI_API_KEY'];
 
@@ -27,6 +28,40 @@ const Exam = {
           res.status(500).json({ error: 'Internal Server Error' });
       }
       }
+    )(req, res, next);
+  },
+  result : async (req, res, next) => {
+    passport.authenticate(
+      "jwt",
+      { session: false },
+      async (err, user, info) => {
+
+        const {testId} = req.params;
+
+        let tests = await selectWithCondition(
+          "tests",
+          { test_id : testId },
+          1
+        );
+
+        tests = tests[0];
+
+        let modules = await selectWithCondition(
+          "modules",
+          { module_id : tests.module_id },
+          1
+        );
+      modules = modules[0];
+     
+      let testName = tests.test_name;
+      let moduleName = "Internet Programming";
+  
+  
+      res.render("student/result" , {user : user ,
+          testName ,
+          moduleName,
+     } );
+    }
     )(req, res, next);
   }
   };
@@ -64,7 +99,7 @@ async function saveToDatabase(user_id , question_id, test_id, answer, response){
       answer_text : answer,
       outcome : response
     };
-    await createData("responses", UserResponse);
+    await createData("answer", UserResponse);
 
   } catch (error) {
       console.log(error);
