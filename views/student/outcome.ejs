@@ -46,17 +46,28 @@
                        <table class='table oq-table'>
                            <tr class="usertable">
                                 <th>Sno.</th>
-                                <th>Subject name</th>
-                                <th>Test name</th>
-                                <th>Score</th>
+                                <th>First Name</th>
+                                <th>LastName</th>
+                                <th>Module</th>
+                                <th>Test Name</th>
+                                <th>Marks</th>
                            </tr>
+
+                           <% if (users.length > 0) { %>
+
+                            <% users.forEach((user, index) => { %>
 
                            <tr class="">
                             <th>Sno.</th>
-                            <th> <%= subject %></th>
+                            <th> <%= user.first_name %></th>
+                            <th><%= user.last_name %></th>
+                            <th><%= moduleName %></th>
                             <th><%= testName %></th>
-                            <th><%= correctCount %></th>
-                    
+                            <th><%= user.percentage%>%</th>
+
+                            <% }); %> <% } else { %>
+                              <span class="oq-news">No tests available</span>
+                              <% } %>
                        </tr>
 
                         </table>

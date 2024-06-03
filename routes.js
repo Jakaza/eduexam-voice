@@ -115,6 +115,7 @@ router.get("/exam/outcome", (req , res)=>{
 });
 
 router.get("/exam/result/:testId", Exam.result);
+router.get("/exam/writen-test/:testId", Exam.viewStudentPerWrittenExam);
 
 
 module.exports = router;
