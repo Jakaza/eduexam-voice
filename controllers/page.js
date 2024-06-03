@@ -134,6 +134,20 @@ const Page = {
       1
     );
 
+    const testIdS = new Set(tests.map((test) => test.test_id));
+    const testids = Array.from(testIdS);
+
+
+    for (const test of tests) {
+      const answers = await dbFunctions.selectWithCondition(
+        "answer",
+        { test_id: test.test_id },
+        1
+      );
+      // Add a property to the test object indicating whether it has answers
+      test.hasAnswers = answers.length > 0;
+    }
+
     console.log("modules ", modules);
     res.render("lecturer/test", {
       tests: tests ? tests : [],

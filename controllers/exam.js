@@ -92,6 +92,8 @@ const Exam = {
           1
       );
 
+      console.log(tests);
+
       let modules = await selectWithCondition(
         "modules",
         { module_id : tests[0].module_id },

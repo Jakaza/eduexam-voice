@@ -28,6 +28,10 @@
               <span class="oq-username">
                 <%= user.first_name + ' ' + user.last_name %>
               </span>
+              <a href="/"
+              ><span class="glyphicon glyphicon-home"></span
+              >&nbsp;&nbsp;Home</a
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <!-- <a class="btn btn-primary" href="logout.php?logout">Logout</a> -->
               <a class="oq-btn btn btn-primary" href="/auth/logout">Logout</a>
             </div>
@@ -41,10 +45,13 @@
         <div class='container-fluid'>
             <div class='row'>
                 <div class='col-md-8 col-md-offset-2'>
+     
                     <div class="oq-userResult">
                         <h5>Following consists of tests scores along with the subject name:</h5><br>
                        <table class='table oq-table'>
-                           <tr class="usertable">
+                        <% if (users.length > 0) { %>  
+                        
+                        <tr class="usertable">
                                 <th>Sno.</th>
                                 <th>First Name</th>
                                 <th>LastName</th>
@@ -53,7 +60,7 @@
                                 <th>Marks</th>
                            </tr>
 
-                           <% if (users.length > 0) { %>
+                          
 
                             <% users.forEach((user, index) => { %>
 
@@ -66,7 +73,7 @@
                             <th><%= user.percentage%>%</th>
 
                             <% }); %> <% } else { %>
-                              <span class="oq-news">No tests available</span>
+                              <span class="oq-news">It appears that no students have completed this test yet. Feel free to check back later for updates.</span> <br>
                               <% } %>
                        </tr>
 

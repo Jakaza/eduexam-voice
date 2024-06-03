@@ -26,6 +26,7 @@
           </div>
           <div class="col-md-8">
             <div class="oq-userArea pull-right">
+    
               <a href="/"
                 ><span class="glyphicon glyphicon-home"></span
                 >&nbsp;&nbsp;Home</a
@@ -122,7 +123,7 @@
                     <th>Test Name</th>
                     <th>Time</th>
                     <th>Operations</th>
-                    <th>Generate Report</th>
+                    <th>Action</th>
                   </tr>
                   <% tests.forEach((test, index) => { %>
                   <tr>
@@ -147,12 +148,18 @@
                       </a>
                       &nbsp;
 
-                      <a
+
+                      <% if (!test.hasAnswers) { %>
+                        <a
                         href="/test/delete/<%= test.test_id %>/<%=module_id%>"
                         class="oq-deletebtn"
                         ><span class="glyphicon glyphicon-remove"></span>
                         Delete</a
                       >
+                      <% } %>
+
+
+                     
                     </td>
                     <td>
                       &nbsp;
@@ -161,7 +168,7 @@
                         class="oq-btn"
                       >
                         <span class="glyphicon glyphicon-pencil"></span>
-                        View Student Wrote Test
+                        View Students' Test Submissions
                       </a>
                       &nbsp;
                     </td>
