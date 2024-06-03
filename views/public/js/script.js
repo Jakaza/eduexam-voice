@@ -173,15 +173,8 @@ function speech(testValue) {
     console.log("Confidence: " + event.results[0][0].confidence);
   };
 
-
-
-
-
-
   recognition.onend = function () {
-    
     console.log("Now it is repeating instructions if i don't say anything.....");
-
     if (flag == 1 || flag == 2) {
       console.log("onend if");
       recognition.stop();
@@ -339,23 +332,28 @@ answerRecognition.onresult = function (event) {
         console.log(`Answer: ${question.answer}`);
     });
     console.log("START");
-    extractedQuestionsAnswers.forEach(question => {
-        fetch('/exam/evaluate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(question),
-        })
-        .then(response => response.json())
-        .then(result => console.log(result))
-        .catch(error => console.error('Error:', error));
-    });
-
-
-    // MUST REDIRECT TO OTHER PAGE WHEN IT'S DONE 
-
-    console.log("END");
+    const evaluationPromises = extractedQuestionsAnswers.map(question => {
+      return fetch('/exam/evaluate', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(question),
+      })
+      .then(response => response.json())
+      .then(result => {
+          console.log(result);
+          return result; // Return the evaluation result
+      })
+      .catch(error => console.error('Error:', error));
+  });
+  Promise.all(evaluationPromises)
+  .then(() => {
+      window.location = '/exam/result';
+      console.log("END");
+  })
+  .catch(error => console.error('Error:', error));
+  
 
 
     // const allQuestionsAnswered = extractedQuestionsAnswers.every(question => question.answer !== "");

@@ -106,16 +106,17 @@
               "placeholder",
               "Enter Lecturer Number"
             );
+            identificationNumberInput.style.display = "block";
           } else if (selectedRole === "STUDENT") {
             identificationNumberInput.setAttribute(
               "placeholder",
               "Enter Student Number"
             );
-          } else {
+            identificationNumberInput.style.display = "block";
+          } else if (selectedRole === "ADMIN"){
             // If "Admin" is selected, remove the identificationNumberInput
-            identificationNumberInput.parentNode.removeChild(
-              identificationNumberInput
-            );
+            identificationNumberInput.value = ""; // Clear input value
+            identificationNumberInput.style.display = "none"; // Hide the input
           }
         });
     </script>

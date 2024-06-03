@@ -141,6 +141,36 @@ const Page = {
       module: modules[0],
     });
   },
+
+  viewWrittenTest: async (req, res, next) => {
+    passport.authenticate(
+      "jwt",
+      { session: false },
+      async (err, user, info) => {
+        if (err) {
+          return res.status(500).render("error/server");
+        }
+        if (!user) {
+          return res.render("index", { isAuthenticated: false });
+        }
+        if (user.user_role === ROLES.Lecturer) {
+        const { test_id } = req.params;
+        const responses = await selectWithCondition("responses", { test_id: test_id });
+        const tests = await selectWithCondition("tests", { test_id: test_id });
+        const studentIds = responses.map(response => response.student_id);
+        const students = await selectWithCondition("users", { user_id: studentIds });
+
+        console.log("students ", students);
+          res.render("lecturer/writtenTests", {
+            test: tests[0],
+            students: students ? students : [],
+          });
+        }
+        res.redirect("/");
+      }
+    )(req, res, next);
+  },
+
   viewQuestion: async (req, res) => {
     const testId = req.query.test; // Get the value of the 'test' query parameter
     try {
