@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS questions (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS responses (
+CREATE TABLE IF NOT EXISTS answer (
     response_id SERIAL PRIMARY KEY,
     test_id INT REFERENCES tests(test_id) ON DELETE CASCADE,
     question_id INT REFERENCES questions(question_id) ON DELETE CASCADE,
