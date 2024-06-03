@@ -348,9 +348,12 @@ answerRecognition.onresult = function (event) {
       .catch(error => console.error('Error:', error));
   });
   Promise.all(evaluationPromises)
-  .then(() => {
-      window.location = '/exam/result';
-      console.log("END");
+  .then((results) => {
+    const testIds = results.map(result => result.test_id);
+    const testId = testIds.length > 0 ? testIds[0] : null;
+    localStorage.setItem('evaluationCurrentResults', JSON.stringify(results));
+    window.location = '/exam/result/'+testId;
+    console.log("END");
   })
   .catch(error => console.error('Error:', error));
   
