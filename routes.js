@@ -28,7 +28,7 @@ router.get("/tests/:testId", Page.viewModuleTest);
 
 // Lecturer
 router.get("/test/view/:module_id", isUserLoggedIn, Page.viewTest);
-router.get("/writen-test/view/:test_id", isUserLoggedIn, Page.viewWrittenTest);
+// router.get("/writen-test/view/:test_id", isUserLoggedIn, Page.viewWrittenTest);
 router.get("/question/view", Page.viewQuestion);
 
 // AUTH
@@ -115,7 +115,9 @@ router.get("/exam/outcome", (req , res)=>{
 });
 
 router.get("/exam/result/:testId", Exam.result);
-router.get("/exam/writen-test/:testId", Exam.viewStudentPerWrittenExam);
+// router.get("/exam/writen-test/:testId", Exam.viewStudentPerWrittenExam);
+router.get("/writen-test/view/:test_id", isUserLoggedIn, Exam.viewStudentPerWrittenExam);
+
 
 
 module.exports = router;
