@@ -41,7 +41,7 @@ router.post("/module/create", Module.create);
 router.delete("/module/delete/:moduleID", Module.delete);
 
 // TEST
-router.post("/test/create", Test.create);
+router.post("/test/create", Test.createTest);
 router.get("/test/delete/:testId/:moduleId", Test.delete);
 router.post("/test/update/:testID/:moduleID", Test.update);
 
