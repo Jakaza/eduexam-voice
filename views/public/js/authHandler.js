@@ -78,6 +78,70 @@ function validateForm() {
         isValid = false;
     }
 
+     // Extract components from the ID number
+    const year = parseInt(rsaId.substring(0, 2), 10);
+    const month = parseInt(rsaId.substring(2, 4), 10);
+    const day = parseInt(rsaId.substring(4, 6), 10);
+    const genderCode = parseInt(rsaId.substring(6, 10), 10);
+    const citizenCode = parseInt(rsaId.substring(10, 11), 10);
+    const checksum = parseInt(rsaId.substring(12), 10);
+
+    if (month < 1 || month > 12 || day < 1 || day > 31) {
+        document.querySelector('#cityerror').textContent = "Invalid date format in ID number. Please check month and day.";
+        isValid = false;
+    }
+
+    const currentYear = new Date().getFullYear();
+    const validYear = (year < 100) ? (year + 2000) : (year + 1900);
+    if (validYear > currentYear) {
+        document.querySelector('#cityerror').textContent = "Invalid birth year in ID number. Year cannot be in the future.";
+        isValid = false;
+    }
+
+    // Validate gender code
+    if (genderCode < 0 || genderCode > 9999) {
+        document.querySelector('#cityerror').textContent = "Invalid gender code in ID number.";
+        isValid = false;
+    } else if (genderCode < 5000) {
+        // Female - check if day is between 01 and 31
+        if (day > 31) {
+            document.querySelector('#cityerror').textContent = "Invalid day for female in ID number. Day should be between 01 and 31.";
+            isValid = false;
+        }
+    } else {
+        // Male - check if day is between 01 and 30
+        if (day > 30) {
+            document.querySelector('#cityerror').textContent = "Invalid day for male in ID number. Day should be between 01 and 30.";
+            isValid = false;
+        }
+    }
+
+    // Validate citizen code (0 - SA citizen, 1 - Permanent resident)
+    if (citizenCode !== 0 && citizenCode !== 1) {
+        document.querySelector('#cityerror').textContent = "Invalid citizen code in ID number. Must be 0 or 1.";
+        isValid = false;
+    }
+
+        // Luhn Algorithm for checksum validation
+    let sum = 0;
+    for (let i = 0; i < 12; i++) {
+        const digit = parseInt(idNumber.charAt(i), 10);
+        if ((i % 2) === 0) {
+        sum += digit * 2;
+        } else {
+        sum += digit;
+        }
+    }
+
+    const checkDigit = (10 - (sum % 10)) % 10;
+
+    if (checkDigit !== checksum) {
+        document.querySelector('#cityerror').textContent = "Invalid checksum digit in ID number.";
+        isValid = false;
+    }
+
+
+
     if (!email.match(/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/)) {
         document.querySelector('#phoneerror').textContent = 'Invalid email address';
         isValid = false;

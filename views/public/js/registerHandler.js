@@ -127,22 +127,24 @@ function validateForm() {
     '#register-form select[name="course_id"]'
   ).value;
 
+
+  // Clear error messages on input changes
   document.querySelectorAll(".oq-error").forEach((errorSpan) => {
+    console.log(errorSpan);
     errorSpan.textContent = "";
   });
 
-  let isValid = true;
 
   if (!first_name.trim().match(/^[a-zA-Z\s]+$/)) {
     document.querySelector("#nameerror").textContent =
       "Invalid name (only letters and spaces allowed)";
-    isValid = false;
+      return false;
   }
 
   if (!last_name.match(/^[a-zA-Z\s]+$/)) {
     document.querySelector("#adderror").textContent =
       "Invalid surname (only letters and spaces allowed)";
-    isValid = false;
+      return false;
   }
 
   const phoneNumberPattern = /^\d{10}$/;
@@ -150,41 +152,87 @@ function validateForm() {
   if (!phoneNumberPattern.test(phone_number)) {
     document.querySelector("#phoneerror").textContent =
       "Invalid surname (only letters and spaces allowed)";
-    isValid = false;
+      return false;
   }
 
   if (!rsaId.match(/^\d{13}$/)) {
     document.querySelector("#cityerror").textContent =
       "Invalid ID Number (13 digits required)";
-    isValid = false;
+    return false;
   }
+
+   // Extract components from the ID number
+   const year = parseInt(rsaId.substring(0, 2), 10);
+   const month = parseInt(rsaId.substring(2, 4), 10);
+   const day = parseInt(rsaId.substring(4, 6), 10);
+   const genderCode = parseInt(rsaId.substring(6, 10), 10);
+   const citizenCode = parseInt(rsaId.substring(10, 11), 10);
+   const checksum = parseInt(rsaId.substring(12), 10);
+
+   if (month < 1 || month > 12 || day < 1 || day > 31) {
+       document.querySelector('#cityerror').textContent = "Invalid date format in ID number. Please check month and day.";
+       return false;
+   }
+
+  //  const currentYear = new Date().getFullYear();
+  //  const validYear = (year < 100) ? (year + 2000) : (year + 1900);
+  //  if (validYear >= currentYear) { 
+  //   console.log(validYear);
+  //    document.querySelector('#cityerror').textContent = "Invalid birth year in ID number. Year cannot be in the future or the current year.";
+  //    isValid = false;
+  //  }
+
+   // Validate gender code
+   if (genderCode < 0 || genderCode > 9999) {
+       document.querySelector('#cityerror').textContent = "Invalid gender code in ID number.";
+       return false;
+   } else if (genderCode < 5000) {
+       // Female - check if day is between 01 and 31
+       if (day > 31) {
+           document.querySelector('#cityerror').textContent = "Invalid day for female in ID number. Day should be between 01 and 31.";
+           return false;
+       }
+   } else {
+       // Male - check if day is between 01 and 30
+       if (day > 30) {
+           document.querySelector('#cityerror').textContent = "Invalid day for male in ID number. Day should be between 01 and 30.";
+           return false;
+       }
+   }
+
+   // Validate citizen code (0 - SA citizen, 1 - Permanent resident)
+   if (citizenCode !== 0 && citizenCode !== 1) {
+       document.querySelector('#cityerror').textContent = "Invalid citizen code in ID number. Must be 0 or 1.";
+       return false;
+   }
+
 
   if (!email.match(/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/)) {
     document.querySelector("#phoneerror").textContent = "Invalid email address";
-    isValid = false;
+    return false;
   }
 
   if (password.length < 6) {
     document.querySelector("#passerror").textContent =
       "Password must be at least 6 characters long";
-    isValid = false;
+      return false;
   }
 
   if (password !== confirmPassword) {
     document.querySelector("#repasserror").textContent =
       "Passwords do not match";
-    isValid = false;
+      return false;
   }
 
   if (user_role === "") {
     alert("Please select a role");
-    isValid = false;
+    return false;
   }
 
   if (course_id === "") {
     alert("Please select a course");
-    isValid = false;
+    return false;
   }
 
-  return isValid;
+  return true;
 }
