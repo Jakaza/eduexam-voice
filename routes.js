@@ -24,6 +24,7 @@ router.post("/user/delete", SuperAdmin.deleteUser);
 // User
 router.get("/modules", Page.viewModules);
 router.get("/modules/:moduleName", Page.viewModule);
+// router.get("/modules/testing/:moduleName", Page.viewModuleTesting);
 router.get("/tests/:testId", Page.viewModuleTest);
 
 // Lecturer

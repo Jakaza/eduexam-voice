@@ -70,6 +70,9 @@
                 </h3>
                 <br />
                 <h3 id="instructHead">
+
+                  <% if (questions.length > 0) { %>
+
                   Say the word "instructions" to listen instructions
                 </h3>
                 <br /><br />
@@ -88,6 +91,11 @@
                 <h4 id="speakTimer">
                   Time remaining : <span id="timer">40 Minutes 0 seconds.</span>
                 </h4>
+
+                <% } else { %>
+                  There are no questions available to write this test
+                  <% } %>
+
               </div>
               <div class="row">
                 <div class="col-md-8">
