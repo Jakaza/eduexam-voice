@@ -18,6 +18,7 @@ const Page = {
         }
         if (user.user_role === ROLES.Student) {
           const { testId } = req.params;
+          
           let tests = await dbFunctions.selectWithConditionIgnoreCase(
             "tests",
             { test_id: testId },
@@ -107,6 +108,32 @@ const Page = {
               { module_id: module_id },
               1
             );
+
+            console.log("tests [] ", tests);
+
+            const testIds = tests.map(test => test.test_id);
+            for (let i = 0; i < testIds.length; i++) {
+              const answers = await dbFunctions.selectWithConditionIgnoreCase(
+                "answer",
+                { test_id: testIds[i] },
+                1
+              );
+
+              const questions = await dbFunctions.selectWithConditionIgnoreCase(
+                "questions",
+                { test_id: testIds[i] },
+                1
+              );
+
+              if(questions.length == 0){
+                tests = tests.filter((test) => test.test_id !== testIds[i]);
+              }
+
+              if(answers.length > 0){
+                tests = tests.filter((test) => test.test_id !== testIds[i]);
+              }
+            }
+
           }
 
           return res.render("student/module", {
@@ -116,6 +143,78 @@ const Page = {
           });
         }
         res.redirect("/");
+      }
+    )(req, res, next);
+  },
+  viewModuleTesting: async (req, res, next) => {
+    passport.authenticate(
+      "jwt",
+      { session: false },
+      async (err, user, info) => {
+        if (err) {
+          return res.status(500).render("error/server");
+        }
+        if (!user) {
+          return res.render("index", { isAuthenticated: false });
+        }
+          const { moduleName } = req.params;
+          const decodedModuleName = moduleName.replace(/%20/g, " ");
+
+          let modules = await dbFunctions.selectWithConditionIgnoreCase(
+            "modules",
+            { module_code: decodedModuleName, course_id: user.course_id },
+            1
+          );
+          let tests = [];
+
+          if (modules && modules.length > 0) {
+            const module_id = modules[0].module_id;
+            tests = await dbFunctions.selectWithCondition(
+              "tests",
+              { module_id: module_id },
+              1
+            );
+
+            console.log("tests [] ", tests);
+
+            const testIds = tests.map(test => test.test_id);
+            for (let i = 0; i < testIds.length; i++) {
+
+              console.log(testIds[i]);
+
+              const answers = await dbFunctions.selectWithConditionIgnoreCase(
+                "answer",
+                { test_id: testIds[i] },
+                1
+              );
+
+              const questions = await dbFunctions.selectWithConditionIgnoreCase(
+                "questions",
+                { test_id: testIds[i] },
+                1
+              );
+
+              if(questions.length == 0){
+                tests = tests.filter((test) => test.test_id !== testIds[i]);
+              }
+
+              if(answers.length > 0){
+                tests = tests.filter((test) => test.test_id !== testIds[i]);
+              }
+            }
+
+
+
+
+           
+
+          }
+
+          return res.render("student/module", {
+            user: user,
+            module_name: modules ? modules.module_name : "",
+            tests: tests ? tests : [],
+          });
       }
     )(req, res, next);
   },

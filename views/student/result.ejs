@@ -54,6 +54,11 @@
         <script src="/js/jquery-3.1.1.min.js"></script>
         <script src="/js/bootstrap.js"></script>
         <script type="text/javascript">
+
+
+			let countToLogOut = 0;
+
+
         	var resultPara = document.querySelector('#spresult');
         	var syn = window.speechSynthesis;
 			var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
@@ -122,8 +127,16 @@
 				    }
 			    }
 			    recognition.onend = function() {
-			        console.log("onend");
-					console.log("Must Logout User Automatically......");
+					countToLogOut++;
+					if(countToLogOut == 3){
+						var saythis = "Unfortunately, I can't understand what you're saying at this time. I am logging you out of the system";
+				        var sysThis = new SpeechSynthesisUtterance(saythis);
+				        syn.speak(sysThis);
+				        sysThis.onend = function(event) {
+				            window.location = '/auth/logout';
+				    }	
+					}
+
 			        if(flag == 1 || flag == 2 || flag == 3){
 			        	console.log("onend if");
             			recognition.stop();

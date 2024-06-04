@@ -127,11 +127,13 @@ function startTimer() {
 
 var resultPara1 = document.querySelector(".spresult1");
 
+var startPhrases = "begin | start | starts | stut";
+
 function speech(testValue) {
   var flag = 0;
   console.log("in speech");
   var grammar =
-    "#JSGF V1.0; grammar phrase; public <phrase> = " + testValue + ";";
+    "#JSGF V1.0; grammar phrase; public <phrase> = " + startPhrases + ";";
   console.log(SpeechRecognition);
   var recognition = new SpeechRecognition();
   var speechRecognitionList = new SpeechGrammarList();
@@ -144,7 +146,7 @@ function speech(testValue) {
   recognition.onresult = function (event) {
     var speechResult = event.results[0][0].transcript;
     speechResult = speechResult.replace(/\.$/, '');
-    if (speechResult.toLowerCase() === testValue || speechResult.toLowerCase() === "begin") {
+    if (speechResult.toLowerCase() == testValue || speechResult.toLowerCase() == "begin" || speechResult.toLowerCase().includes("begin") || speechResult.toLowerCase().includes("start")) {
       flag = 1;
       resultPara1.textContent = "Speech received: " + speechResult + ".";
       var syn = window.speechSynthesis;
@@ -307,23 +309,29 @@ answerRecognition.onresult = function (event) {
   let transcript = event.results[current][0].transcript;
   transcript = transcript.toLowerCase();
 
-  if (transcript.includes("next question")) {
+  if (transcript.includes("next question") ||  transcript.includes("next")) {
       saveToLocalStorage(questionNumber);
       console.log(userResponse);
       questionChanged = false;
       questionNumber++;
       readQuestion(questionNumber)
       console.log("Read Next Question");
-  }else if (transcript.includes("previous question")) {
+  }else if (transcript.includes("previous question") || transcript.includes("previous")) {
       saveToLocalStorage(questionNumber);
       console.log(userResponse);
-      questionNumber--;
+      if(questionNumber > 0){
+        questionNumber--;
+      }
       questionChanged = true;
       readQuestion(questionNumber)
-      
-
       console.log("Read Previous Question");
-  }else if (transcript.includes("submit test") || transcript.includes("submit")) {
+  }
+  else if (transcript.includes("repeat question") || transcript.includes("question")) {
+    saveToLocalStorage(questionNumber);
+    console.log(userResponse);
+    readQuestion(questionNumber)
+    console.log("Repeating The Question Question");
+}else if (transcript.includes("submit test") || transcript.includes("submit")) {
     const extractedQuestionsAnswers = extractQuestionsWithAnswersFromHTML();
     extractedQuestionsAnswers.forEach((question, index) => {
         console.log(`${question.question_text}`);
@@ -357,30 +365,6 @@ answerRecognition.onresult = function (event) {
   })
   .catch(error => console.error('Error:', error));
   
-
-
-    // const allQuestionsAnswered = extractedQuestionsAnswers.every(question => question.answer !== "");
-    // if (!allQuestionsAnswered) {
-    //   console.error("Not all questions have answers");
-    //   if (isRecordStopped) {
-    //     answerRecognition.stop();
-    //   }
-    //   let statement = new SpeechSynthesisUtterance("You did not answered all the questions are you you want to submit say 'YES' or Next Question");
-    //   synth.speak(statement);
-
-    //   statement.onend = function () {
-    //     answerRecognition.start();
-    //   };
-    // }else{
-    //   // Submit Here
-    //   // let statement = new SpeechSynthesisUtterance("I am submitting all your answers now wait a seconds");
-    //   var statement = new SpeechSynthesisUtterance("The submit functionality is not yet implemented I am logging you out in few seconds");
-    //   synth.speak(statement);
-    //   statement.onend = function () {
-    //     // window.location = "/student/outcome" 
-    //   };
-    // }
-
   }else if (transcript.includes("yes")) {
       isRecordStopped = true;
       questionChanged = false;
@@ -406,30 +390,21 @@ answerRecognition.onresult = function (event) {
         const textarea = questionElement.querySelector('.user_response');
 
         if (textarea && textarea.id === currentQuestion.question_id) {
-            
-          if(questionChanged){
 
-              questionElement.answer = transcript;
-              answer = transcript
-              textarea.value = transcript;
-              console.log(transcript);
-              response = {
-                  question: currentQuestion.question_text,
-                  answer: answer,
-                  question_id: currentQuestion.question_id
-              }
-              userResponse.push(response)
-          }else{
-              questionElement.answer += ` ${transcript}`;
-              answer += ` ${transcript}`;
-              textarea.value += ` ${transcript}`;
-              response = {
-                  question: currentQuestion.question_text,
-                  answer: answer,
-                  question_id: currentQuestion.question_id
-              }
-              userResponse.push(response)
+          if(questionChanged){
+              textarea.value = '';
+              questionChanged = false;
           }
+
+          questionElement.answer += ` ${transcript}`;
+          answer += ` ${transcript}`;
+          textarea.value += ` ${transcript}`;
+          response = {
+              question: currentQuestion.question_text,
+              answer: answer,
+              question_id: currentQuestion.question_id
+          }
+          userResponse.push(response)
         }
     });
   }
@@ -453,12 +428,10 @@ function saveToLocalStorage(questionNumber) {
 
 
 function readQuestion(qNo){
-
   if (isRecordStopped) {
     console.log("isRecordStopped === false", isRecordStopped);
     answerRecognition.stop();
   }
-
   if(extractedQuestions.length >= qNo){
       let ques = extractedQuestions[(qNo-1)].question_text;
       let quesThis = new SpeechSynthesisUtterance(ques);
@@ -492,6 +465,17 @@ answerRecognition.onend = function () {
 };
 
 
+const intervalMicActivate = setInterval(function(){
+  if(isRecordStopped){
+    answerRecognition.start();
+    isRecordStopped = false;
+    console.log("Reactivating Mic From Dead");
+  }else{
+    console.log("Killing the Mic Interval");
+    answerRecognition.stop();
+    clearInterval(intervalMicActivate)
+  }
+}, 1000);
 
 
 
