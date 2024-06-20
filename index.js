@@ -1,8 +1,8 @@
 require("dotenv").config();
 const express = require("express");
 const path = require("path");
-const http = require('http');
-const socketIo = require('socket.io');
+const http = require("http");
+const socketIo = require("socket.io");
 const bodyParser = require("body-parser");
 const app = express();
 const routes = require("./routes");
@@ -34,27 +34,22 @@ app.post("/email/account", async (req, res) => {
 
   if (emailStatus) {
     console.log("Email sent successfully.");
-    res
-      .status(201)
-      .json({
-        status: true,
-        message: "Test created successfully.",
-        emailStatus: true,
-      });
+    res.status(201).json({
+      status: true,
+      message: "Test created successfully.",
+      emailStatus: true,
+    });
   } else {
     console.log("Failed to send email.");
-    res
-      .status(500)
-      .json({
-        status: false,
-        message: "Failed to send email.",
-        emailStatus: false,
-      });
+    res.status(500).json({
+      status: false,
+      message: "Failed to send email.",
+      emailStatus: false,
+    });
   }
 });
 
 const server = http.createServer(app);
-
 
 // const io = socketIo(server);
 
@@ -74,7 +69,6 @@ const server = http.createServer(app);
 app.get("/*", (req, res) => res.render("error/404"));
 
 const PORT = process.env.PORT || 3000;
-
 
 server.listen(PORT, () => {
   console.log(`Server is up at port ${PORT}`);

@@ -38,7 +38,11 @@ const Test = {
         if (user.user_role === ROLES.Lecturer) {
           try {
             const { test_name, module_id } = req.body;
-            await createData("tests", { test_name, module_id , user_id : user.user_id  });
+            await createData("tests", {
+              test_name,
+              module_id,
+              user_id: user.user_id,
+            });
             return res
               .status(201)
               .json({ status: true, message: "Test created successfully." });

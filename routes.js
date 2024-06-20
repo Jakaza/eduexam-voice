@@ -51,74 +51,83 @@ router.post("/question/create", Question.create);
 router.get("/question/delete/:questionID/:testId", Question.delete);
 router.post("/question/update/:questionID/:testId", Question.update);
 
-
 // Exam
 router.post("/exam/evaluate", Exam.evaluate);
-router.get("/exam/outcome", (req , res)=>{
+router.get("/exam/outcome", (req, res) => {
+  const user = {
+    first_name: "Jakaza",
+    last_name: "Chauke",
+  };
+  const responsesData = [
+    {
+      response_id: 1,
+      test_id: 123,
+      question_id: 456,
+      student_id: 789,
+      answer_text: "Lorem ipsum dolor sit amet",
+      outcome: "Correct",
+      submitted_at: "2024-05-30T12:00:00", // Assuming current timestamp
+    },
+    {
+      response_id: 2,
+      test_id: 123,
+      question_id: 457,
+      student_id: 790,
+      answer_text: "Consectetur adipiscing elit",
+      outcome: "Wrong",
+      submitted_at: "2024-05-30T12:05:00", // Assuming current timestamp
+    },
+    {
+      response_id: 3,
+      test_id: 123,
+      question_id: 458,
+      student_id: 791,
+      answer_text: "Sed do eiusmod tempor incididunt",
+      outcome: "Correct",
+      submitted_at: "2024-05-30T12:10:00", // Assuming current timestamp
+    },
+    {
+      response_id: 4,
+      test_id: 123,
+      question_id: 459,
+      student_id: 792,
+      answer_text: "Ut labore et dolore magna aliqua",
+      outcome: "Wrong",
+      submitted_at: "2024-05-30T12:15:00", // Assuming current timestamp
+    },
+  ];
 
-    const user = {
-        first_name: 'Jakaza',
-        last_name: 'Chauke'
+  let correctCount = 0;
+  let wrongCount = 0;
+  let testName = "Final";
+  let subject = "Internet Programming";
+
+  responsesData.forEach((response) => {
+    if (response.outcome === "Correct") {
+      correctCount++;
+    } else if (response.outcome === "Wrong") {
+      wrongCount++;
     }
-    const responsesData = [
-        {
-            response_id: 1,
-            test_id: 123,
-            question_id: 456,
-            student_id: 789,
-            answer_text: "Lorem ipsum dolor sit amet",
-            outcome: "Correct",
-            submitted_at: "2024-05-30T12:00:00" // Assuming current timestamp
-        },
-        {
-            response_id: 2,
-            test_id: 123,
-            question_id: 457,
-            student_id: 790,
-            answer_text: "Consectetur adipiscing elit",
-            outcome: "Wrong",
-            submitted_at: "2024-05-30T12:05:00" // Assuming current timestamp
-        },
-        {
-            response_id: 3,
-            test_id: 123,
-            question_id: 458,
-            student_id: 791,
-            answer_text: "Sed do eiusmod tempor incididunt",
-            outcome: "Correct",
-            submitted_at: "2024-05-30T12:10:00" // Assuming current timestamp
-        },
-        {
-            response_id: 4,
-            test_id: 123,
-            question_id: 459,
-            student_id: 792,
-            answer_text: "Ut labore et dolore magna aliqua",
-            outcome: "Wrong",
-            submitted_at: "2024-05-30T12:15:00" // Assuming current timestamp
-        },
-    ];
+  });
 
-    let correctCount = 0;
-    let wrongCount = 0;
-    let testName = "Final";
-    let subject = "Internet Programming";
-
-    responsesData.forEach(response => {
-        if (response.outcome === "Correct") {
-            correctCount++;
-        } else if (response.outcome === "Wrong") {
-            wrongCount++;
-        }
-    });
-
-    res.render("student/outcome" , {user : user , outcome : responsesData , correctCount: correctCount , wrongCount: wrongCount , testName ,subject} );
+  res.render("student/outcome", {
+    user: user,
+    outcome: responsesData,
+    correctCount: correctCount,
+    wrongCount: wrongCount,
+    testName,
+    subject,
+  });
 });
+
+// Language Translation
 
 router.get("/exam/result/:testId", Exam.result);
 // router.get("/exam/writen-test/:testId", Exam.viewStudentPerWrittenExam);
-router.get("/writen-test/view/:testId", isUserLoggedIn, Exam.viewStudentPerWrittenExam);
-
-
+router.get(
+  "/writen-test/view/:testId",
+  isUserLoggedIn,
+  Exam.viewStudentPerWrittenExam
+);
 
 module.exports = router;
