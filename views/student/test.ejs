@@ -10,6 +10,21 @@
     <meta name="description" content="Online Exam" />
     <meta name="author" content="Akhil Regonda" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <style>
+
+.fa-language {
+    font-size: 20px;
+    color: rgb(109, 176, 212); /* Initial icon color */
+    transition: color 0.3s ease;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+    </style>
+    
+    
     <script>
       function timer() {
         console.log(".json_encode($row2['testtime']).");
@@ -82,7 +97,9 @@
                   <br />1. To navigate between the questions say the word "next question" or "previous question".  <br />
                   <br />2. To repeat question say the word "repeat question".  <br />
                   <br />3. To submit the test say the word "submit test".  <br />
-                  <br />4. To start exam say the word "start or begin". <br />
+                   <br />4. To translate the question to Zulu language click the icon next to question.<br />
+                  <br />5. To start exam say the word "start or begin". <br />
+                 
                 </p>
                 <br />
                 <p id="spresult1" class="spresult1"></p>
@@ -101,22 +118,33 @@
                   <form action="result.php" method="post" name="oqform" id="oqform">
                     <input type='hidden' id='rowscount' name='totalQus'>
                     <p id='spresult2' class='spresult2'></p>
-                    
+
                     <div id="questionsContainer">
-                        <% questions.forEach((question, index) => { %>
-                            <div class='question'>
-                                <button class='oq-aLeft oq-questions oq-form-control' disabled>
-                                    Question <%= index + 1 %>: <%= question.question_text %>
-                                </button>
-                                <input type='hidden' id='<%= question.question_id %>' name='question_id<%= index %>' value='<%= question.question_id %>'>
-                                <input type='hidden' name='test_id<%= index %>' value='<%= question.test_id %>'>
-                                <br>
-                                <textarea class="form-control user_response" name="user_response" id='<%= question.question_id %>' cols="30" rows="5"></textarea>
-                                <br><br>
-                            </div>
-                        <% }); %>
-                    </div>
-        
+    <% questions.forEach((question, index) => { %>
+        <div class='question'>
+            <button class='oq-aLeft oq-questions oq-form-control' disabled>
+                Question <%= index + 1 %>: <span class="question-text"><%= question.question_text +' ?' %></span>
+                <span class="button translate-button" data-question-id="<%= question.question_id %>" data-question-text="<%= question.question_text %>" >
+                    <i class="fa-solid fa-language"></i>
+                </span>
+            </button>
+
+            <div class="translated-question" id="translated-<%= question.question_id %>" style="display: none; margin-top: 10px; font-style: italic; color: gray;">
+               
+            </div>
+
+            <input type='hidden' id='<%= question.question_id %>' name='question_id<%= index %>' value='<%= question.question_id %>'>
+            <input type='hidden' name='test_id<%= index %>' value='<%= question.test_id %>'>
+            <br>
+            <textarea class="form-control user_response" name="user_response" id='<%= question.question_id %>' cols="30" rows="5"></textarea>
+            <div class="translated-question" id="translated-<%= question.question_id %>" style="display: none; margin-top: 10px; font-style: italic; color: gray;">
+                Translated Question: What is your name?
+            </div>
+            <br><br>
+        </div>
+    <% }); %>
+</div>
+
                     <br>
 
                   <button id="submit-btn" class="oq-btn" onclick="submitTestByClickingButton()">Submit Test</button>
@@ -185,10 +213,19 @@ function submitTestByClickingButton() {
 
     </script>
 
-
-    
     <script src="/js/jquery-3.1.1.min.js"></script>
     <script src="/js/bootstrap.js"></script>
+    <script src="/js/translation.js"></script>
     <script src="/js/script.js"></script>
+
+
+    <style>
+    .translated-question {
+        margin-top: 10px;
+        font-style: italic;
+        color: gray;
+    }
+</style>
+
   </body>
 </html>

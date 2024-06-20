@@ -123,9 +123,9 @@ router.get("/exam/outcome", (req, res) => {
 
 // Language Translation
 
-router.post("/translate/question/:questionId", (res, req) => {});
+// router.post("/translate/question/:questionId", (res, req) => {});
 
-router.get("/translate/question", Translation.translate);
+router.post("/translate/question", Translation.translate);
 
 router.get("/exam/result/:testId", Exam.result);
 // router.get("/exam/writen-test/:testId", Exam.viewStudentPerWrittenExam);
