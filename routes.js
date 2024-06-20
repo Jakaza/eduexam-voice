@@ -8,6 +8,7 @@ const Test = require("./controllers/test");
 const Question = require("./controllers/question");
 const SuperAdmin = require("./controllers/admin");
 const Exam = require("./controllers/exam");
+const Translation = require("./controllers/translation");
 
 // rendering pages - ejs
 router.get("/", isUserLoggedIn, Page.homePage);
@@ -121,6 +122,10 @@ router.get("/exam/outcome", (req, res) => {
 });
 
 // Language Translation
+
+// router.post("/translate/question/:questionId", (res, req) => {});
+
+router.post("/translate/question", Translation.translate);
 
 router.get("/exam/result/:testId", Exam.result);
 // router.get("/exam/writen-test/:testId", Exam.viewStudentPerWrittenExam);

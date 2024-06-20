@@ -23,7 +23,25 @@
     <% } else { %>
         <% console.log('No Test Available'); %>
     <% } %>
+
+
+
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            window.addEventListener('beforeunload', function(event) {
+
+                console.log("Trying to stop speaker of prev page.....");
+
+                if (speechSynthesis.speaking) {
+                     console.log("It is speaking so now you can stop it.");
+                    speechSynthesis.cancel();
+                }
+            });
+        });
+    </script>
 </head>
+
+
 
 <body>
     <div class="oq-header">
@@ -53,9 +71,17 @@
                             <% if (tests.length > 0) { %>
                                 List of tests for the subject <%= module_name %> are.. <br><br>
                               <% for (let i = 0; i < tests.length; i++) { %>
-                                <span class="tests"><%= words[i] %>.</span><br> <br>
+
+                                 <a href="/tests/<%= tests[i].test_id %>">
+
+                                     <span class="tests"><%= words[i] %>.</span>
+
+                                 </a>
+
+
+                               <br> <br>
                               <% } %>
-                              Choose one by saying the test name or say repeat to repeat the list.
+                              Choose one by saying the test name or say repeat to repeat the list.  Or you can click the test.
                             <% } else { %>
                               There are no tests available to write for <%= module_name %> <br> <br> <span>You will be redirected to main page in seconds .</span>
                             <% } %>

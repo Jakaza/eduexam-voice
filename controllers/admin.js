@@ -113,7 +113,6 @@ const SuperAdmin = {
             password,
             password_retyped,
             rsa_id,
-            user_role,
             phone_number,
             user_address,
           } = req.body;
@@ -154,7 +153,6 @@ const SuperAdmin = {
             email,
             ...(password && { password_hash: hashedPassword }),
             rsa_id,
-            user_role,
             phone_number,
             user_address,
           };
@@ -163,7 +161,6 @@ const SuperAdmin = {
           });
           res.render("admin/success_page", {
             message: "User updated successfully",
-            user_role: user_role.toLowerCase(),
           });
         } else {
           res.redirect("/");

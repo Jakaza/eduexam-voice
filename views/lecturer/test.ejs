@@ -162,15 +162,26 @@
                      
                     </td>
                     <td>
-                      &nbsp;
+                        &nbsp;
+
+                                           <% if (test.hasAnswers) { %>
+               
                       <a
                         href="/writen-test/view/<%=test.test_id %>"
                         class="oq-btn"
                       >
                         <span class="glyphicon glyphicon-pencil"></span>
-                        View Students' Test Submissions
+                       View Students' Test Submissions
                       </a>
-                      &nbsp;
+                    
+                      <% }else { %>
+  No Student Wrote This test
+
+                     
+  <% } %>
+
+                        &nbsp;
+                     
                     </td>
                   </tr>
                   <div
