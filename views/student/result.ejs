@@ -10,6 +10,20 @@
     <meta name="description" content="Online Exam" />
     <meta name="author" content="Goodness Themba Chauke" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+	            <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            window.addEventListener('beforeunload', function(event) {
+
+                console.log("Trying to stop speaker of prev page.....");
+
+                if (speechSynthesis.speaking) {
+                     console.log("It is speaking so now you can stop it.");
+                    speechSynthesis.cancel();
+                }
+            });
+        });
+    </script>
 	</head>
 	<body>
         <div class="oq-header">
