@@ -10,8 +10,6 @@
     <meta name="description" content="Online Exam" />
     <meta name="author" content="Akhil Regonda" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    ";
-
     <script>
       function timer() {
         console.log(".json_encode($row2['testtime']).");
@@ -34,7 +32,7 @@
         }, 1000);
       }
     </script></head
-  >;
+  >
 
   <body>
     <div class="oq-header">
@@ -119,8 +117,11 @@
                         <% }); %>
                     </div>
         
-                    <br><br>
-                
+                    <br>
+
+                  <button id="submit-btn" class="oq-btn" onclick="submitTestByClickingButton()">Submit Test</button>
+                   
+
                 </form>
                 </div>
               </div>
@@ -129,6 +130,62 @@
         </div>
       </div>
     </div>
+
+
+    <script>
+
+
+function submitTestByClickingButton() {
+    const submitButton = document.getElementById('submit-btn');
+    submitButton.disabled = true;  // Disable the button
+    submitButton.textContent = 'Loading...';  // Change button text to 'Loading...'
+
+    const extractedQuestionsAnswers = extractQuestionsWithAnswersFromHTML();
+    extractedQuestionsAnswers.forEach((question, index) => {
+        console.log(`${question.question_text}`);
+        console.log(`Question ID: ${question.question_id}`);
+        console.log(`Test ID: ${question.test_id}`);
+        console.log(`Answer: ${question.answer}`);
+    });
+    console.log("START");
+
+    const evaluationPromises = extractedQuestionsAnswers.map(question => {
+        return fetch('/exam/evaluate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(question),
+        })
+        .then(response => response.json())
+        .then(result => {
+            console.log(result);
+            return result; // Return the evaluation result
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            throw error;  // Propagate the error to the Promise.all handler
+        });
+    });
+
+    Promise.all(evaluationPromises)
+    .then((results) => {
+        const testIds = results.map(result => result.test_id);
+        const testId = testIds.length > 0 ? testIds[0] : null;
+        localStorage.setItem('evaluationCurrentResults', JSON.stringify(results));
+        window.location = '/exam/result/' + testId;
+        console.log("END");
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        submitButton.disabled = false;  // Re-enable the button if there's an error
+        submitButton.textContent = 'Submit Test';  // Revert button text if there's an error
+    });
+}
+
+    </script>
+
+
     
     <script src="/js/jquery-3.1.1.min.js"></script>
     <script src="/js/bootstrap.js"></script>

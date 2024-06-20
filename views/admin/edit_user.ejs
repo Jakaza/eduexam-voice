@@ -80,11 +80,7 @@
   <input type="text" class="form-control" placeholder="Enter Address" name="user_address" value="<%= userData.user_address %>" required /><br />
   <input type="password" class="form-control" placeholder="Enter Password" name="password" /><br />
   <input type="password" class="form-control" placeholder="Re-enter password" name="password_retyped" /><br />
-  <select class="form-control" name="user_role">
-    <option value="">Select Role</option>
-    <option value="STUDENT" <% if (userData.user_role === 'STUDENT') { %>selected<% } %>>Student</option>
-    <option value="LECTURER" <% if (userData.user_role === 'LECTURER') { %>selected<% } %>>Lecturer</option>
-  </select>
+
   <br />
   <input type="submit" id="edit-user-btn" class="form-control btn btn-primary" value="Update Account" name="update" /><br /><br />
 </form>
