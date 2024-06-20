@@ -9,13 +9,22 @@ document.addEventListener("DOMContentLoaded", (event) => {
         `translated-${questionId}`
       );
       if (translatedQuestionElement) {
-        const translatedText = await translateQuestion(
-          questionId,
-          questionText
-        );
-        console.log("translatedText : ", translatedText);
-        translatedQuestionElement.innerText = `Translated Question: ${translatedText.response}`;
-        translatedQuestionElement.style.display = "block";
+        button.disabled = true;
+
+        try {
+          const translatedText = await translateQuestion(
+            questionId,
+            questionText
+          );
+          console.log("translatedText : ", translatedText);
+          translatedQuestionElement.innerText = `Translated Question: ${translatedText.response}`;
+          translatedQuestionElement.style.display = "block";
+        } catch (error) {
+          console.error("Error:", error);
+          // Handle error as needed
+        } finally {
+          button.disabled = false;
+        }
       }
     });
   });

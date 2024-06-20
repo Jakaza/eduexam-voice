@@ -23,7 +23,25 @@
     <% } else { %>
         <% console.log('No Test Available'); %>
     <% } %>
+
+
+
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            window.addEventListener('beforeunload', function(event) {
+
+                console.log("Trying to stop speaker of prev page.....");
+
+                if (speechSynthesis.speaking) {
+                     console.log("It is speaking so now you can stop it.");
+                    speechSynthesis.cancel();
+                }
+            });
+        });
+    </script>
 </head>
+
+
 
 <body>
     <div class="oq-header">
