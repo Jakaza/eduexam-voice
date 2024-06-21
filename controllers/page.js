@@ -4,6 +4,8 @@ const { ROLES } = require("../constants/");
 const dbFunctions = require("../config/dbFunctions");
 const json = require("body-parser/lib/types/json");
 
+const LANGUAGE = process.env["TRANSLATE_TO"];
+
 const Page = {
   viewModuleTest: async (req, res, next) => {
     passport.authenticate(
@@ -38,6 +40,7 @@ const Page = {
           console.log(questions);
 
           return res.render("student/test", {
+            language: LANGUAGE,
             user: user,
             questions: questions ? questions : [],
             test_name: tests ? tests[0].test_name : "",
