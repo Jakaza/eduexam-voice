@@ -115,7 +115,8 @@
                   <br />2. To repeat question say the word "repeat question".  <br />
                   <br />3. To submit the test say the word "submit test".  <br />
                    <br />4. To translate the question to Zulu language click the icon next to question.<br />
-                  <br />5. To start exam say the word "start or begin". <br />
+                  <br />5. To translate your answer to Zulu language click the button below the answer.<br />
+                  <br />6. To start the test say begin or wait the test will start in few seconds<br />
                  
                 </p>
                 <br />
@@ -132,7 +133,7 @@
               <div class="row">
                 <div class="col-md-8">
                  
-                  <form action="result.php" method="post" name="oqform" id="oqform">
+                  <form method="post" name="oqform" id="oqform">
                     <input type='hidden' id='rowscount' name='totalQus'>
                     <p id='spresult2' class='spresult2'></p>
 
@@ -153,11 +154,15 @@
             <input type='hidden' id='<%= question.question_id %>' name='question_id<%= index %>' value='<%= question.question_id %>'>
             <input type='hidden' name='test_id<%= index %>' value='<%= question.test_id %>'>
             <br>
-            <textarea class="form-control user_response" name="user_response" id='<%= question.question_id %>' cols="30" rows="5"></textarea>
-            <div class="translated-question" id="translated-<%= question.question_id %>" style="display: none; margin-top: 10px; font-style: italic; color: gray;">
-                Translated Question: What is your name?
-            </div>
-            <br><br>
+            <textarea class="form-control user_response" name="user_response" id='response-<%= question.question_id %>' cols="30" rows="5"></textarea>
+
+            <span class="button oq-btn translate-answer-button" style="display: none; cursor: pointer; border-radius: 8px;" data-response-id="response-<%= question.question_id %>">
+              Translate Answer <i style="color: aliceblue;" class="fa-solid fa-language"></i>
+            </span>
+
+          <div class="translated-answer" id="translated-answer-<%= question.question_id %>" style="display: none; margin-top: 10px; font-style: italic; color: gray;"></div>
+        <br><br>
+
         </div>
     <% }); %>
 </div>

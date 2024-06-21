@@ -176,20 +176,8 @@ function speech(testValue) {
   };
 
   recognition.onend = function () {
-    console.log("Now it is repeating instructions if i don't say anything.....");
-    if (flag == 1 || flag == 2) {
-      console.log("onend if");
-      recognition.stop();
-    } else {
-      if (flag == 4) {
-        recognition.stop();
-      } else {
-        console.log("onend else");
-        recognition.stop();
-        startTimer();
-      }
-      flag = 3;
-    }
+    timer();
+    readTimerQuestion();
   };
 
   recognition.onerror = function (event) {
@@ -389,7 +377,7 @@ answerRecognition.onresult = function (event) {
     questionElements.forEach(questionElement => {
         const textarea = questionElement.querySelector('.user_response');
 
-        if (textarea && textarea.id === currentQuestion.question_id) {
+        if (textarea && textarea.id == `response-${currentQuestion.question_id}`) {
 
           if(questionChanged){
               textarea.value = '';

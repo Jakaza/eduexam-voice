@@ -52,7 +52,7 @@
                         <% if (users.length > 0) { %>  
                         
                         <tr class="usertable">
-                                <th>Sno.</th>
+                                <th>Student Number</th>
                                 <th>First Name</th>
                                 <th>LastName</th>
                                 <th>Module</th>
@@ -65,7 +65,7 @@
                             <% users.forEach((user, index) => { %>
 
                            <tr class="">
-                            <th>Sno.</th>
+                            <th> <%= user.identification_number %></th>
                             <th> <%= user.first_name %></th>
                             <th><%= user.last_name %></th>
                             <th><%= moduleName %></th>
