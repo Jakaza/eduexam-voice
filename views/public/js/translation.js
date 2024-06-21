@@ -37,7 +37,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
       const translated = translateAnswerButton.nextElementSibling;
       if (textarea.value.trim()) {
         translateAnswerButton.style.display = "inline-block";
-        translated.style.display = "inline-block";
       } else {
         translateAnswerButton.style.display = "none";
         translated.style.display = "none";
