@@ -6,6 +6,7 @@ const {
   selectWithConditionIgnoreCase,
 } = require("../config/dbFunctions");
 const OPENAI_API_KEY = process.env["OPENAI_API_KEY"];
+const LANGUAGE = process.env["TRANSLATE_TO"];
 
 const Translation = {
   translate: async (req, res, next) => {
@@ -40,7 +41,7 @@ async function chatGPTResponse(question) {
         messages: [
           {
             role: "user",
-            content: `Translate this Sentence "${question}" in Zulu and only return translated sentence`,
+            content: `Translate this Sentence "${question}" in ${LANGUAGE} and only return translated sentence`,
           },
         ],
         max_tokens: 100,
