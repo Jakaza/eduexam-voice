@@ -115,7 +115,7 @@ const Page = {
             for (let i = 0; i < testIds.length; i++) {
               const answers = await dbFunctions.selectWithConditionIgnoreCase(
                 "answer",
-                { test_id: testIds[i] },
+                { test_id: testIds[i] , student_id: user.user_id },
                 1
               );
 

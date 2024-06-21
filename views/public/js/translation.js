@@ -34,10 +34,13 @@ document.addEventListener("DOMContentLoaded", (event) => {
   textareas.forEach((textarea) => {
     textarea.addEventListener("input", (event) => {
       const translateAnswerButton = textarea.nextElementSibling;
+      const translated = translateAnswerButton.nextElementSibling;
       if (textarea.value.trim()) {
         translateAnswerButton.style.display = "inline-block";
+        translated.style.display = "inline-block";
       } else {
         translateAnswerButton.style.display = "none";
+        translated.style.display = "none";
       }
     });
   });
