@@ -29,6 +29,55 @@ document.addEventListener("DOMContentLoaded", (event) => {
     });
   });
 
+
+  const textareas = document.querySelectorAll(".user_response");
+  textareas.forEach((textarea) => {
+    textarea.addEventListener("input", (event) => {
+      const translateAnswerButton = textarea.nextElementSibling;
+      if (textarea.value.trim()) {
+        translateAnswerButton.style.display = "inline-block";
+      } else {
+        translateAnswerButton.style.display = "none";
+      }
+    });
+  });
+
+  const translateAnswerButtons = document.querySelectorAll(".translate-answer-button");
+  translateAnswerButtons.forEach((button) => {
+    button.addEventListener("click", async (event) => {
+      event.stopPropagation(); 
+      const responseId = button.getAttribute("data-response-id");
+      const questionId = responseId.split('-')[1];
+      const responseElement = document.getElementById(`response-${questionId}`);
+       
+
+      const answerText = responseElement.value;
+
+      const translatedAnswerElement = document.getElementById(
+        `translated-answer-${responseId.split('-')[1]}`
+      );
+
+      if (translatedAnswerElement) {
+        button.disabled = true;
+
+        try {
+          const translatedText = await translateQuestion(questionId, answerText);
+          console.log("translatedText : ", translatedText);
+          translatedAnswerElement.innerText = `Translated Answer: ${translatedText.response}`;
+          translatedAnswerElement.style.display = "block";
+        } catch (error) {
+          console.error("Error:", error);
+          // Handle error as needed
+        } finally {
+          button.disabled = false;
+        }
+      }
+    });
+  });
+
+
+
+
   async function translateQuestion(questionId, questionText) {
     const data = {
       question_id: questionId,
