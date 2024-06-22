@@ -21,6 +21,7 @@
     "express-validator": "^7.0.1",
     "http": "^0.0.1-security",
     "http-status-codes": "^2.3.0",
+    "json2csv": "^6.0.0-alpha.2",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.9.12",
     "nodemon": "^3.0.3",

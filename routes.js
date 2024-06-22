@@ -128,6 +128,10 @@ router.get("/exam/outcome", (req, res) => {
 router.post("/translate/question", Translation.translate);
 
 router.get("/exam/result/:testId", Exam.result);
+
+router.get("/export/:testId", Exam.exportFile);
+
+
 // router.get("/exam/writen-test/:testId", Exam.viewStudentPerWrittenExam);
 router.get(
   "/writen-test/view/:testId",
