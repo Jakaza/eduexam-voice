@@ -58,6 +58,7 @@
                                 <th>Module</th>
                                 <th>Test Name</th>
                                 <th>Marks</th>
+                                <th>Action</th>
                            </tr>
 
                           
@@ -71,6 +72,11 @@
                             <th><%= moduleName %></th>
                             <th><%= testName %></th>
                             <th><%= user.percentage%>%</th>
+                            <th>
+
+                              <a href="/report/view/<%= user.user_id %>/<%= moduleId %>/<%= testId %>"> View Report </a>
+
+                            </th>
 
                             <% }); %> <% } else { %>
                               <span class="oq-news">It appears that no students have completed this test yet. Feel free to check back later for updates.</span> <br>

@@ -53,6 +53,102 @@ const Page = {
     )(req, res, next);
   },
 
+  viewReport: async (req, res, next) => {
+    passport.authenticate(
+      "jwt",
+      { session: false },
+      async (err, user, info) => {
+        if (err) {
+          return res.status(500).render("error/server");
+        }
+        if (!user) {
+          return res.render("index", { isAuthenticated: false });
+        }
+        if (user.user_role === ROLES.Lecturer) {
+
+          const {studentId , moduleId, testId } = req.params;
+ 
+          let users = await dbFunctions.selectWithConditionIgnoreCase(
+            "users",
+            { user_id: studentId },
+            1
+          );
+
+          let modules = await dbFunctions.selectWithConditionIgnoreCase(
+            "modules",
+            { module_id: moduleId },
+            1
+          );
+          
+          let tests = await dbFunctions.selectWithConditionIgnoreCase(
+            "tests",
+            { test_id: testId },
+            1
+          );
+          let questions = await dbFunctions.selectWithConditionIgnoreCase(
+            "questions",
+            { test_id: testId },
+            1
+          );
+
+          // Initialize an array to store questions with answers
+          let questionsWithAnswers = [];
+
+          // Iterate over each question to fetch its answers
+          for (let i = 0; i < questions.length; i++) {
+            let question = questions[i];
+            // Fetch answers for the current question
+            let answers = await dbFunctions.selectWithConditionIgnoreCase(
+              "answer",
+              { test_id: testId, question_id: question.question_id , student_id: studentId },
+              1 
+            );
+
+            let marks = 0;
+            for (let j = 0; j < answers.length; j++) {
+              if (answers[j].outcome === 'Correct') {
+                marks++;
+              }
+              // You may assign different marks for correct vs incorrect answers as needed
+            }
+            // Add question details along with answers to the result array
+            questionsWithAnswers.push({
+              question_id: question.question_id,
+              question_text: question.question_text,
+              test_id: question.test_id,
+              marks: marks,
+              answer: answers[0] // Array of answers for the current question
+            });
+          }
+
+          let totalMarks = 0;
+          for (let index = 0; index < questionsWithAnswers.length; index++) {
+              totalMarks += questionsWithAnswers[index].marks;
+          }
+
+          console.log("questions", questions);
+          console.log("questionsWithAnswers", questionsWithAnswers);
+
+
+          let percentage = Math.round((totalMarks *100) / questionsWithAnswers.length);
+
+          console.log(" totalMarks : " , percentage , "%");
+
+          return res.render("lecturer/report", {
+            moduleName: modules[0].module_name,
+            moduleCode: modules[0].module_code,
+            testName: tests[0].test_name,
+            user: users[0],
+            questions: questionsWithAnswers,
+            test: tests[0],
+            totalMarks: percentage
+          });
+        }
+        res.redirect("./");
+      }
+    )(req, res, next);
+  },
+
   viewModules: async (req, res, next) => {
     passport.authenticate(
       "jwt",
