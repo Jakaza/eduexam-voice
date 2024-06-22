@@ -30,8 +30,8 @@ router.get("/tests/:testId", Page.viewModuleTest);
 
 // Lecturer
 router.get("/test/view/:module_id", isUserLoggedIn, Page.viewTest);
-// router.get("/writen-test/view/:test_id", isUserLoggedIn, Page.viewWrittenTest);
 router.get("/question/view", Page.viewQuestion);
+router.get("/report/view/:studentId/:moduleId/:testId", Page.viewReport);
 
 // AUTH
 router.post("/auth/register", Auth.register);

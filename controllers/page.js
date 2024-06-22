@@ -53,6 +53,50 @@ const Page = {
     )(req, res, next);
   },
 
+  viewReport: async (req, res, next) => {
+    passport.authenticate(
+      "jwt",
+      { session: false },
+      async (err, user, info) => {
+        if (err) {
+          return res.status(500).render("error/server");
+        }
+        if (!user) {
+          return res.render("index", { isAuthenticated: false });
+        }
+        if (user.user_role === ROLES.Lecturer) {
+
+          const {studentId , moduleId, testId } = req.params;
+ 
+          
+          let tests = await dbFunctions.selectWithConditionIgnoreCase(
+            "tests",
+            { test_id: testId },
+            1
+          );
+          let questions = await dbFunctions.selectWithConditionIgnoreCase(
+            "questions",
+            { test_id: testId },
+            1
+          );
+          // let modules = await dbFunctions.selectWithConditionIgnoreCase(
+          //   "modules",
+          //   { module_id: tests[0].module_id },
+          //   1
+          // );
+
+          let test = tests[0];
+
+          return res.render("lecturer/report", {
+            questions: questions,
+            test: test
+          });
+        }
+        res.redirect("./");
+      }
+    )(req, res, next);
+  },
+
   viewModules: async (req, res, next) => {
     passport.authenticate(
       "jwt",

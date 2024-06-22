@@ -142,7 +142,9 @@ const Exam = {
           user: user,
           users : userData,
           testName: tests[0].test_name,
-          moduleName: modules[0].module_name
+          testId: tests[0].test_id,
+          moduleName: modules[0].module_name,
+          moduleId: modules[0].module_id
         });
         } else {
           res.redirect("/");
