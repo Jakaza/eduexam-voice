@@ -7,6 +7,8 @@ const {
 } = require("../config/dbFunctions");
 const OPENAI_API_KEY = process.env['OPENAI_API_KEY'];
 
+let data_exporter = require('json2csv').Parser;
+
 const Exam = {
    evaluate: async (req, res, next) => {
     passport.authenticate(
@@ -108,6 +110,80 @@ const Exam = {
   }, 
 
 
+  // exportFile : async (req, res, next) => {
+  //   passport.authenticate(
+  //     "jwt",
+  //     { session: false },
+  //     async (err, user, info) => {
+
+  //       const {testId} = req.params;
+
+  //       let tests = await selectWithConditionIgnoreCase(
+  //         "tests",
+  //         { test_id: testId },
+  //         1
+  //       );
+        
+  //       let questions = await selectWithConditionIgnoreCase(
+  //         "questions",
+  //         { test_id: testId },
+  //         1
+  //       );
+
+  //       // Initialize an array to store questions with answers
+  //       let questionsWithAnswers = [];
+
+  //       // Iterate over each question to fetch its answers
+  //       for (let i = 0; i < questions.length; i++) {
+  //         let question = questions[i];
+  //         // Fetch answers for the current question
+  //         let answers = await selectWithConditionIgnoreCase(
+  //           "answer",
+  //           { test_id: testId, question_id: question.question_id , student_id: user.user_id },
+  //           1 
+  //         );
+
+  //         let marks = 0;
+  //         for (let j = 0; j < answers.length; j++) {
+  //           if (answers[j].outcome === 'Correct') {
+  //             marks++;
+  //           }
+  //           // You may assign different marks for correct vs incorrect answers as needed
+  //         }
+  //         // Add question details along with answers to the result array
+  //         questionsWithAnswers.push({
+  //           question_id: question.question_id,
+  //           question_text: question.question_text,
+  //           test_id: question.test_id,
+  //           marks: marks,
+  //           answer: answers[0] // Array of answers for the current question
+  //         });
+  //       }
+
+  //       let totalMarks = 0;
+  //       for (let index = 0; index < questionsWithAnswers.length; index++) {
+  //           totalMarks += questionsWithAnswers[index].marks;
+  //       }
+
+  //       console.log("questions", questions);
+  //       console.log("questionsWithAnswers", questionsWithAnswers);
+
+
+  //       let percentage = Math.round((totalMarks *100) / questionsWithAnswers.length);
+
+  //       console.log(" totalMarks : " , percentage , "%");
+
+  //       return res.render("student/report", {
+  //         testName: tests[0].test_name,
+  //         user: user,
+  //         questions: questionsWithAnswers,
+  //         test: tests[0],
+  //         totalMarks: percentage
+  //       });
+
+  //   }
+  //   )(req, res, next);
+  // }, 
 
   viewStudentPerWrittenExam : async (req, res, next) => {
     passport.authenticate(
@@ -135,7 +211,96 @@ const Exam = {
           1
       );
 
-      console.log(tests);
+      let modules = await selectWithCondition(
+        "modules",
+        { module_id : tests[0].module_id },
+        1
+    );
+
+        const studentIdsSet = new Set(answers.map((answer) => answer.student_id));
+        const studentIds = Array.from(studentIdsSet);
+
+        let userData = [];
+        for (const studentId of studentIdsSet) {
+
+        let answers = await selectWithCondition(
+            "answer",
+            { student_id : studentId },
+            1
+        );
+        let correctCount = 0;
+
+        let total = answers.length;
+
+        console.log("answers.submitted_at " , answers[0]);
+      
+        answers.forEach(result => {
+        
+            if (result.outcome === "Correct") {
+                correctCount++;
+            }
+        });
+
+        let percentage = Math.round((correctCount *100) / total)
+        const users = await selectWithConditionIgnoreCase(
+            "users",
+            { user_id: studentId },
+            1
+          );
+          const userDataWithPercentage = {
+            ...users[0],
+            percentage: percentage,
+            date : formartDate(answers[0].submitted_at)
+          };
+
+          userData.push(userDataWithPercentage);
+        }
+
+
+        // console.log(answers);
+        console.log("Data Check Date " , userData);
+
+        return res.render("student/outcome", {
+          user: user,
+          users : userData,
+          testName: tests[0].test_name,
+          testId: tests[0].test_id,
+          moduleName: modules[0].module_name,
+          moduleId: modules[0].module_id
+        });
+        } else {
+          res.redirect("/");
+        }
+      }
+    )(req, res, next);
+  }, 
+
+
+  exportFile : async (req, res, next) => {
+    passport.authenticate(
+      "jwt",
+      { session: false },
+      async (err, user, info) => {
+        if (err) {
+          return res.status(500).render("error/server");
+        }
+        if (!user) {
+          return res.render("index", { isAuthenticated: false });
+        }
+        if (user.user_role === ROLES.Lecturer) {
+          const {testId} = req.params;
+
+        let answers = await selectWithCondition(
+            "answer",
+            { test_id : testId },
+            1
+        );
+
+        let tests = await selectWithCondition(
+          "tests",
+          { test_id : testId },
+          1
+      );
 
       let modules = await selectWithCondition(
         "modules",
@@ -157,7 +322,11 @@ const Exam = {
         let correctCount = 0;
 
         let total = answers.length;
+
+        console.log("answers.submitted_at " , answers[0]);
+      
         answers.forEach(result => {
+        
             if (result.outcome === "Correct") {
                 correctCount++;
             }
@@ -171,30 +340,47 @@ const Exam = {
           );
           const userDataWithPercentage = {
             ...users[0],
-            percentage: percentage
+            percentage: percentage,
+            date : formartDate(answers[0].submitted_at)
           };
 
           userData.push(userDataWithPercentage);
         }
 
+        // const newData = []
 
-        // console.log(answers);
+        // for (let index = 0; index < userData.length; index++) {
+         
+        //   const d = {
+        //     "Student No" : userData[index].
+        //   }
+          
+        //   newData.push(d)
+        // }
+
         console.log(userData);
 
-        return res.render("student/outcome", {
-          user: user,
-          users : userData,
-          testName: tests[0].test_name,
-          testId: tests[0].test_id,
-          moduleName: modules[0].module_name,
-          moduleId: modules[0].module_id
-        });
+        const dataJsonFormat = JSON.parse(JSON.stringify(userData))
+
+        // To CSV
+
+        let fileHeader = ["Student No" , "FirstName", "LastName", "Module Name", "Test Name", "Marks" , "Date"]
+
+        let json_data = new data_exporter({fileHeader});
+        let csv_data = json_data.parse(userData)
+
+        res.setHeader("Content-Type", "text/csv")
+        res.setHeader("Content-Disposition", "attachment; filename=report_data.csv")
+        res.status(200).end(csv_data)
+
         } else {
           res.redirect("/");
         }
       }
     )(req, res, next);
   }, 
+
+
   viewStudentPerWrittenExamTest : async (req, res, next) => {
     passport.authenticate("jwt", { session: false }, async (err, user, info) => {
       if (err) {
@@ -307,6 +493,26 @@ async function saveToDatabase(user_id , question_id, test_id, answer, response){
   } catch (error) {
       console.log(error);
   }
+}
+
+
+
+
+function formartDate(submittedAt){
+
+  const dateObject = new Date(submittedAt);
+
+// Extract date components
+const year = dateObject.getFullYear();
+const month = ('0' + (dateObject.getMonth() + 1)).slice(-2); // Months are zero based, so we add 1
+const day = ('0' + dateObject.getDate()).slice(-2); // Get the day and pad with leading zero if necessary
+const hours = ('0' + dateObject.getHours()).slice(-2); // Get the hours and pad with leading zero if necessary
+const minutes = '00'; // Always set minutes to '00' as per your requirement
+
+// Formatted date string in YYYY-MM-DD 00H00 format
+
+return `${year}-${month}-${day} ${hours}H${minutes}`;
+
 }
 
   module.exports = Exam;
