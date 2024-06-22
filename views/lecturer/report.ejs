@@ -64,12 +64,11 @@
                   </div>
                   <div class="col-md-3">
                     <div class="pull-right">
-                      <a
+                      <span
                         class="oq-addbtn"
-                        data-toggle="modal"
-                        data-target=".newtest"
-                        >Total Marks <%= totalMarks%>%</a
-                      >
+
+                        >Total Marks <%= totalMarks%>%
+                        </span>
                     </div>
                   </div>
                 </div>
@@ -77,62 +76,6 @@
                 
               </div>
 
-              <div
-                class="modal fade newtest"
-                tabindex="-1"
-                role="dialog"
-                aria-labelledby="mySmallModalLabel"
-              >
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-body">
-                      <div class="oq-questionModal">
-                        <form
-                          class="form"
-                          id="create-question-form"
-                          action=""
-                          method="post"
-                        >
-                          <br />
-                          <span>Question</span><br /><br />
-
-                          <span
-                            id="question-create-error"
-                            style="color: rgb(198, 79, 79)"
-                          >
-                          </span>
-                          <br /><br />
-                          <textarea
-                            class="form-control"
-                            placeholder="Enter the question"
-                            name="question_text"
-                            required
-                          ></textarea
-                          ><br />
-
-                          <div class="row">
-                            <input
-                              type="hidden"
-                              name="test_id"
-                              value="<%=test.test_id%>"
-                            />
-                          </div>
-                          <br />
-                          <br /><br />
-
-                          <input
-                            type="submit"
-                            id="create-question-btn"
-                            class="form-control oq-btn"
-                            value="Create question"
-                            name="newques"
-                          />
-                        </form>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
 
               <table class="table oq-table">
                 <tbody>
@@ -161,46 +104,7 @@
                         </span>
                     </td>
                   </tr>
-                  <div
-                    class="modal fade <%= question.question_id %>"
-                    tabindex="-1"
-                    role="dialog"
-                    aria-labelledby="mySmallModalLabel"
-                  >
-                    <div class="modal-dialog" role="document">
-                      <div class="modal-content">
-                        <div class="modal-body">
-                          <div class="oq-questionModal">
-                            <form
-                              class="form"
-                              action="/question/update/<%= question.question_id %>/<%= test.test_id %>"
-                              method="post"
-                              id="update-question-form"
-                            >
-                              <br />
-                              <span>Question</span><br /><br />
-
-                              <textarea
-                                class="form-control"
-                                name="question_text"
-                                minlength="10"
-                              >
-<%= question.question_text %></textarea
-                              >
-                              <br /><br />
-                              <input
-                                type="submit"
-                                class="form-control oq-btn update-btn"
-                                value="Update question"
-                                name="upques"
-                                id="update-question-btn"
-                              />
-                            </form>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+            
 
                   <% }); %> <% } else { %>
                   <tr>

@@ -131,12 +131,19 @@ const Auth = {
         );
       }
 
+      let errorMessage = `Incorrect ${tooLowerCase(
+            user_role
+          )} number or password... Enter correct credentials`;
+
+      if(user_role == 'ADMIN'){
+        errorMessage = 'Enter correct password'
+      }
+
+
       if (!userExist) {
         return res.status(STATUS_CODE.Bad_Request).json({
           status: false,
-          message: `Incorrect ${tooLowerCase(
-            user_role
-          )} number or password... Enter correct credentials`,
+          message: errorMessage
         });
       }
 
@@ -145,9 +152,7 @@ const Auth = {
       if(userExist == undefined){
         return res.status(STATUS_CODE.Bad_Request).json({
           status: false,
-          message: `Incorrect ${tooLowerCase(
-            user_role
-          )} number or password... Enter correct credentials`,
+          message: errorMessage
         });
       }
 
@@ -155,9 +160,7 @@ const Auth = {
       if (!isMatched || user_role !== userExist.user_role) {
         return res.status(STATUS_CODE.Bad_Request).json({
           status: false,
-          message: `Incorrect ${tooLowerCase(
-            user_role
-          )} number or password... Enter correct credentials`,
+          message: errorMessage
         });
       }
       const payload = {
