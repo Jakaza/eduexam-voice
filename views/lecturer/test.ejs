@@ -131,7 +131,12 @@
                     <td><%= test.test_name %></td>
                     <td>40 - Mins</td>
                     <td class="oq-testsoperations">
-                      <a
+                
+
+                      <% if (!test.hasAnswers) { %>
+
+
+                        <a
                         data-toggle="modal"
                         data-target='<%= "." + test.test_id %>'
                         class="oq-editbtn"
@@ -139,6 +144,7 @@
                         <span class="glyphicon glyphicon-pencil"></span> Edit
                       </a>
                       &nbsp;
+
                       <a
                         href='<%= "/question/view?test=" + test.test_id %>'
                         class="oq-btn"
@@ -149,16 +155,18 @@
                       &nbsp;
 
 
-                      <% if (!test.hasAnswers) { %>
+                     
                         <a
                         href="/test/delete/<%= test.test_id %>/<%=module_id%>"
                         class="oq-deletebtn"
                         ><span class="glyphicon glyphicon-remove"></span>
                         Delete</a
                       >
-                      <% } %>
+                      <% }else { %>
+                        
+                        Some students wrote this test, It cannot be edited.
 
-
+                        <% } %>
                      
                     </td>
                     <td>
