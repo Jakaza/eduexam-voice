@@ -52,7 +52,10 @@
                                                 ?> -->
                 <div class="row">
                   <div class="col-md-6">
-                    <span class="oq-testsHeadText"> Report of ...  for <%= test.test_name%> </span>
+                    <span class="oq-testsHeadText"> Report of  <%= user.first_name +' '+ user.last_name %> </span> <br>
+                    <span class="subheading"> Module :  <%= moduleName %>  </span> <br>
+                    <span class="subheading"> Code :  <%= moduleCode %>  </span> <br>
+                    <span class="subheading"> Test :  <%= testName %>  </span>
                   </div>
                   <div class="col-md-3">
                     <div class="text-center">
@@ -65,13 +68,13 @@
                         class="oq-addbtn"
                         data-toggle="modal"
                         data-target=".newtest"
-                        >Print out</a
+                        >Total Marks <%= totalMarks%>%</a
                       >
                     </div>
                   </div>
                 </div>
                 <br />
-                <span>Below is the result</span>
+                
               </div>
 
               <div
@@ -147,25 +150,15 @@
                       <br />
                       <div class="row">
                         <div class="col-md-10 offset-md-1">
-                          <span class="oq-news">Explanation:</span><br /><br />
+                          <span class="oq-news">Answer : <%= question.answer.answer_text %> </span><br /><br />
                         </div>
                       </div>
                     </td>
                     <td class="oq-operations">
-                      <a
-                        id="edit-question-form"
-                        data-toggle="modal"
-                        data-target=".<%= question.question_id %>"
-                        class="oq-btn"
-                        ><span class="glyphicon glyphicon-pencil"></span> Edit
-                        Question</a
-                      ><br /><br />
-                      <a
-                        href="/question/delete/<%= question.question_id %>/<%= test.test_id %>"
-                        class="oq-deletebtn"
-                        ><span class="glyphicon glyphicon-remove"></span>
-                        Delete</a
-                      >
+
+                        <span>
+                            <%= question.answer.outcome %>
+                        </span>
                     </td>
                   </tr>
                   <div

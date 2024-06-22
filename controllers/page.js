@@ -68,6 +68,17 @@ const Page = {
 
           const {studentId , moduleId, testId } = req.params;
  
+          let users = await dbFunctions.selectWithConditionIgnoreCase(
+            "users",
+            { user_id: studentId },
+            1
+          );
+
+          let modules = await dbFunctions.selectWithConditionIgnoreCase(
+            "modules",
+            { module_id: moduleId },
+            1
+          );
           
           let tests = await dbFunctions.selectWithConditionIgnoreCase(
             "tests",
@@ -104,8 +115,9 @@ const Page = {
             questionsWithAnswers.push({
               question_id: question.question_id,
               question_text: question.question_text,
+              test_id: question.test_id,
               marks: marks,
-              answers: answers // Array of answers for the current question
+              answer: answers[0] // Array of answers for the current question
             });
           }
 
@@ -114,8 +126,8 @@ const Page = {
               totalMarks += questionsWithAnswers[index].marks;
           }
 
-          console.log(questions);
-          console.log(questionsWithAnswers);
+          console.log("questions", questions);
+          console.log("questionsWithAnswers", questionsWithAnswers);
 
 
           let percentage = Math.round((totalMarks *100) / questionsWithAnswers.length);
@@ -123,7 +135,11 @@ const Page = {
           console.log(" totalMarks : " , percentage , "%");
 
           return res.render("lecturer/report", {
-            questions: questions,
+            moduleName: modules[0].module_name,
+            moduleCode: modules[0].module_code,
+            testName: tests[0].test_name,
+            user: users[0],
+            questions: questionsWithAnswers,
             test: tests[0],
             totalMarks: percentage
           });
