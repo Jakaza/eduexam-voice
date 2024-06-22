@@ -40,32 +40,75 @@ const Exam = {
 
         const {testId} = req.params;
 
-        let tests = await selectWithCondition(
+        let tests = await selectWithConditionIgnoreCase(
           "tests",
-          { test_id : testId },
+          { test_id: testId },
+          1
+        );
+        
+        let questions = await selectWithConditionIgnoreCase(
+          "questions",
+          { test_id: testId },
           1
         );
 
-        tests = tests[0];
+        // Initialize an array to store questions with answers
+        let questionsWithAnswers = [];
 
-        let modules = await selectWithCondition(
-          "modules",
-          { module_id : tests.module_id },
-          1
-        );
-      modules = modules[0];
-     
-      let testName = tests.test_name;
-      let moduleName = "Internet Programming";
-  
-  
-      res.render("student/result" , {user : user ,
-          testName ,
-          moduleName,
-     } );
+        // Iterate over each question to fetch its answers
+        for (let i = 0; i < questions.length; i++) {
+          let question = questions[i];
+          // Fetch answers for the current question
+          let answers = await selectWithConditionIgnoreCase(
+            "answer",
+            { test_id: testId, question_id: question.question_id , student_id: user.user_id },
+            1 
+          );
+
+          let marks = 0;
+          for (let j = 0; j < answers.length; j++) {
+            if (answers[j].outcome === 'Correct') {
+              marks++;
+            }
+            // You may assign different marks for correct vs incorrect answers as needed
+          }
+          // Add question details along with answers to the result array
+          questionsWithAnswers.push({
+            question_id: question.question_id,
+            question_text: question.question_text,
+            test_id: question.test_id,
+            marks: marks,
+            answer: answers[0] // Array of answers for the current question
+          });
+        }
+
+        let totalMarks = 0;
+        for (let index = 0; index < questionsWithAnswers.length; index++) {
+            totalMarks += questionsWithAnswers[index].marks;
+        }
+
+        console.log("questions", questions);
+        console.log("questionsWithAnswers", questionsWithAnswers);
+
+
+        let percentage = Math.round((totalMarks *100) / questionsWithAnswers.length);
+
+        console.log(" totalMarks : " , percentage , "%");
+
+        return res.render("student/report", {
+          testName: tests[0].test_name,
+          user: user,
+          questions: questionsWithAnswers,
+          test: tests[0],
+          totalMarks: percentage
+        });
+
     }
     )(req, res, next);
   }, 
+
+
+
   viewStudentPerWrittenExam : async (req, res, next) => {
     passport.authenticate(
       "jwt",
