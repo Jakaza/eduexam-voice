@@ -79,17 +79,53 @@ const Page = {
             { test_id: testId },
             1
           );
-          // let modules = await dbFunctions.selectWithConditionIgnoreCase(
-          //   "modules",
-          //   { module_id: tests[0].module_id },
-          //   1
-          // );
 
-          let test = tests[0];
+          // Initialize an array to store questions with answers
+          let questionsWithAnswers = [];
+
+          // Iterate over each question to fetch its answers
+          for (let i = 0; i < questions.length; i++) {
+            let question = questions[i];
+            // Fetch answers for the current question
+            let answers = await dbFunctions.selectWithConditionIgnoreCase(
+              "answer",
+              { test_id: testId, question_id: question.question_id , student_id: studentId },
+              1 
+            );
+
+            let marks = 0;
+            for (let j = 0; j < answers.length; j++) {
+              if (answers[j].outcome === 'Correct') {
+                marks++;
+              }
+              // You may assign different marks for correct vs incorrect answers as needed
+            }
+            // Add question details along with answers to the result array
+            questionsWithAnswers.push({
+              question_id: question.question_id,
+              question_text: question.question_text,
+              marks: marks,
+              answers: answers // Array of answers for the current question
+            });
+          }
+
+          let totalMarks = 0;
+          for (let index = 0; index < questionsWithAnswers.length; index++) {
+              totalMarks += questionsWithAnswers[index].marks;
+          }
+
+          console.log(questions);
+          console.log(questionsWithAnswers);
+
+
+          let percentage = Math.round((totalMarks *100) / questionsWithAnswers.length);
+
+          console.log(" totalMarks : " , percentage , "%");
 
           return res.render("lecturer/report", {
             questions: questions,
-            test: test
+            test: tests[0],
+            totalMarks: percentage
           });
         }
         res.redirect("./");
