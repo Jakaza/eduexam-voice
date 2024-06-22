@@ -26,7 +26,6 @@
           </div>
           <div class="col-md-8">
             <div class="oq-userArea pull-right">
-    
               <a href="/"
                 ><span class="glyphicon glyphicon-home"></span
                 >&nbsp;&nbsp;Home</a
@@ -40,7 +39,7 @@
     <div class="oq-viewTestsBody">
       <div class="container-fluid">
         <div class="row">
-          <div class="col-md-10 col-md-offset-1">
+          <div class="col-md-10 col-md-offset-1" style="width: max-content">
             <div class="oq-viewTests">
               <div class="oq-testsHead">
                 <span class="oq-testsHeadText"> <%= module.module_name%> </span>
@@ -131,12 +130,9 @@
                     <td><%= test.test_name %></td>
                     <td>40 - Mins</td>
                     <td class="oq-testsoperations">
-                
-
                       <% if (!test.hasAnswers) { %>
 
-
-                        <a
+                      <a
                         data-toggle="modal"
                         data-target='<%= "." + test.test_id %>'
                         class="oq-editbtn"
@@ -154,42 +150,27 @@
                       </a>
                       &nbsp;
 
-
-                     
-                        <a
+                      <a
                         href="/test/delete/<%= test.test_id %>/<%=module_id%>"
                         class="oq-deletebtn"
                         ><span class="glyphicon glyphicon-remove"></span>
                         Delete</a
                       >
-                      <% }else { %>
-                        
-                        Some students wrote this test, It cannot be edited.
-
-                        <% } %>
-                     
+                      <% }else { %> Some students wrote this test, It cannot be
+                      edited. <% } %>
                     </td>
                     <td>
-                        &nbsp;
+                      &nbsp; <% if (test.hasAnswers) { %>
 
-                                           <% if (test.hasAnswers) { %>
-               
                       <a
                         href="/writen-test/view/<%=test.test_id %>"
                         class="oq-btn"
                       >
                         <span class="glyphicon glyphicon-pencil"></span>
-                       View Students' Test Submissions
+                        View Students' Test Submissions
                       </a>
-                    
-                      <% }else { %>
-  No Student Wrote This test
 
-                     
-  <% } %>
-
-                        &nbsp;
-                     
+                      <% }else { %> No Student Wrote This test <% } %> &nbsp;
                     </td>
                   </tr>
                   <div
