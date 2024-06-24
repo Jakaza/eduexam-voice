@@ -8,6 +8,7 @@ const {
 const OPENAI_API_KEY = process.env["OPENAI_API_KEY"];
 
 let data_exporter = require("json2csv").Parser;
+const exceljs = require("exceljs")
 
 const Exam = {
   evaluate: async (req, res, next) => {
@@ -358,17 +359,6 @@ const Exam = {
             userData.push(userDataWithPercentage);
           }
 
-          // const newData = []
-
-          // for (let index = 0; index < userData.length; index++) {
-
-          //   const d = {
-          //     "Student No" : userData[index].
-          //   }
-
-          //   newData.push(d)
-          // }
-
           console.log(userData);
 
           let sampleData = [];
@@ -385,44 +375,66 @@ const Exam = {
             }
 
             const currentUserData = {
-              "Student No": userD.identification_number,
-              FirstName: userD.first_name,
-              LastName: userD.last_name,
-              "Module Name": modules[0].module_name,
-              "Module Code": modules[0].module_code,
-              "Test Name": tests[0].test_name,
-              Marks: userD.percentage,
-              status: status,
-              Date: userD.date,
-            };
+              'StudentNo': userD.identification_number,
+            'FirstName' : userD.first_name,
+            'LastName' :  userD.last_name,
+            'ModuleName' : modules[0].module_name,
+            'ModuleCode' :  modules[0].module_code,
+            'TestName' : tests[0].test_name,
+            'Marks' : userD.percentage,
+            'status' : status,
+            'Date' :  userD.date,
+            }
+
             sampleData.push(currentUserData);
           });
 
-          const dataJsonFormat = JSON.parse(JSON.stringify(sampleData));
+          // const dataJsonFormat = JSON.parse(JSON.stringify(sampleData));
 
           // To CSV
 
           let fileHeader = [
-            "Student No",
-            "FirstName",
-            "LastName",
-            "Module Name",
-            "Module Code",
-            "Test Name",
-            "Marks",
-            "status",
-            "Date",
+            'Student No',
+            'FirstName',
+            'LastName',
+            'Module Name',
+            'Module Code',
+            'Test Name',
+            'Marks',
+            'status',
+            'Date',
           ];
 
-          let json_data = new data_exporter({ fileHeader });
-          let csv_data = json_data.parse(dataJsonFormat);
+          let workbook = new exceljs.Workbook()
 
-          res.setHeader("Content-Type", "text/csv");
+          const sheet = workbook.addWorksheet("report")
+          sheet.columns = [
+            {header: "Student No", key:"StudentNo" , width: 25},
+            {header: "Name", key:"FirstName" , width: 25},
+            {header: "Surname", key:"LastName" , width: 25},
+            {header: "Module Name", key:"ModuleName" , width: 25},
+            {header: "Module Code", key:"ModuleCode" , width: 25},
+            {header: "Test Name", key:"TestName" , width: 25},
+            {header: "Marks", key:"Marks" , width: 25},
+            {header: "status", key:"status" , width: 25},
+            {header: "Date", key:"Date" , width: 25},
+          ]
+
+          await sampleData.map((value, index) =>{
+            sheet.addRow(value)
+          })
+
+
+
+          // let json_data = new data_exporter({ fileHeader });
+          // let csv_data = json_data.parse(sampleData);
+
+          res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
           res.setHeader(
             "Content-Disposition",
-            "attachment; filename=report_data.csv"
+            "attachment; filename=report_data.xlsx"
           );
-          res.status(200).end(csv_data);
+          workbook.xlsx.write(res);
         } else {
           res.redirect("/");
         }
