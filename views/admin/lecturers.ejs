@@ -64,7 +64,12 @@
                   </div>
                   <div class="col-md-3">
                     <div class="pull-right">
-                      <a href="/" class="oq-addbtn">Back</a>
+                    
+                      <form action="/export-users" method="post">
+                        <input type="hidden" name="user_role" value="LECTURER">
+                        <input type="submit" class="oq-addbtn" value="Export Data To Excel File">
+                      </form>
+
                     </div>
                   </div>
                 </div>

@@ -9,6 +9,7 @@ const Question = require("./controllers/question");
 const SuperAdmin = require("./controllers/admin");
 const Exam = require("./controllers/exam");
 const Translation = require("./controllers/translation");
+const File = require("./controllers/generateFile");
 
 // rendering pages - ejs
 router.get("/", isUserLoggedIn, Page.homePage);
@@ -130,6 +131,8 @@ router.post("/translate/question", Translation.translate);
 router.get("/exam/result/:testId", Exam.result);
 
 router.get("/export/:testId", Exam.exportFile);
+
+router.post("/export-users", File.exportFile);
 
 
 // router.get("/exam/writen-test/:testId", Exam.viewStudentPerWrittenExam);
